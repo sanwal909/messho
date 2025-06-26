@@ -51,15 +51,19 @@ function displayProducts(productsToShow) {
                     <span class="original-price">₹${product.originalPrice}</span>
                     <span class="discount">${product.discount}% off</span>
                 </div>
+                <div class="special-offer-badge">₹${Math.floor(product.price * 0.25)} with 2 Special Offers</div>
+                <div class="delivery-info">Free Delivery</div>
                 <div class="product-rating">
-                    <span class="rating-badge">${product.rating}</span>
+                    <span class="rating-badge">
+                        <i class="fas fa-star"></i>
+                        ${product.rating}
+                    </span>
                     <span class="rating-count">(${product.reviews})</span>
                     <span class="trusted-badge">
                         <i class="fas fa-shield-alt"></i>
                         Trusted
                     </span>
                 </div>
-                <div class="delivery-info">Free Delivery</div>
             </div>
         </div>
     `).join('');

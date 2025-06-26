@@ -57,6 +57,44 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
         <div class="product-info">
             <h2 class="product-title" id="productTitle">PINK FRILL KNEE LENGTH DRESS</h2>
             
+            <div class="product-actions-top">
+                <div class="wishlist-btn">
+                    <i class="far fa-heart"></i>
+                    <span>Wishlist</span>
+                </div>
+                <div class="share-btn">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Share</span>
+                </div>
+            </div>
+            
+            <div class="product-pricing">
+                <div class="price-section">
+                    <span class="current-price" id="currentPrice">₹98.00</span>
+                    <span class="original-price" id="originalPrice">₹1949</span>
+                    <span class="discount-percent" id="discountPercent">95% off</span>
+                </div>
+                <div class="special-offers">
+                    <div class="offer-badge">₹675 with 2 Special Offers</div>
+                </div>
+            </div>
+            
+            <div class="rating-section">
+                <div class="rating-badge">
+                    <i class="fas fa-star"></i>
+                    <span id="productRating">4.5</span>
+                </div>
+                <span class="review-count" id="reviewCount">784 ratings and 61 reviews</span>
+                <div class="trusted-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Trusted</span>
+                </div>
+            </div>
+            
+            <div class="delivery-section">
+                <div class="delivery-info">Free Delivery</div>
+            </div>
+            
             <div class="product-actions">
                 <button class="wishlist-btn">
                     <i class="far fa-heart"></i>
