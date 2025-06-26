@@ -108,6 +108,14 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
                 <button class="size-option" onclick="selectSize(this)" data-size="XL">XL</button>
             </div>
         </div>
+
+        <!-- Similar Products -->
+        <div class="similar-products-section">
+            <h3>Similar Products</h3>
+            <div class="similar-products-grid" id="similarProducts">
+                <!-- Similar products will be loaded here -->
+            </div>
+        </div>
     </div>
 
     <!-- Product Actions -->
@@ -169,6 +177,41 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
             }, 500);
         }
 
+        async function loadSimilarProducts() {
+            try {
+                const response = await fetch('api/products.php');
+                const products = await response.json();
+                
+                // Get similar products (same category, excluding current product)
+                const similarProducts = products
+                    .filter(p => p.category === currentProduct.category && p.id !== currentProduct.id)
+                    .slice(0, 4);
+                
+                const similarContainer = document.getElementById('similarProducts');
+                similarContainer.innerHTML = '';
+                
+                similarProducts.forEach(product => {
+                    const productHTML = `
+                        <div class="similar-product-item" onclick="viewProduct(${product.id})">
+                            <div class="similar-product-image">
+                                <img src="${product.image}" alt="${product.name}">
+                            </div>
+                            <div class="similar-product-info">
+                                <div class="similar-product-name">${product.name}</div>
+                                <div class="similar-product-price">
+                                    ₹${product.price}
+                                    <span class="similar-product-original-price">₹${product.originalPrice}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    similarContainer.innerHTML += productHTML;
+                });
+            } catch (error) {
+                console.error('Error loading similar products:', error);
+            }
+        }
+
         // Load product details on page load
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -190,6 +233,9 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
                         document.getElementById('reviews').textContent = `(${currentProduct.reviews} reviews)`;
                         document.getElementById('offerText').textContent = currentProduct.offer;
                         document.title = `${currentProduct.name} - Meesho`;
+                        
+                        // Load similar products
+                        await loadSimilarProducts();
                     }
                 } catch (error) {
                     console.error('Error loading product:', error);

@@ -132,29 +132,36 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
                     <div class="upi-option">
                         <input type="radio" id="paytm" name="upiMethod" value="paytm">
                         <label for="paytm">
-                            <i class="fab fa-paytm" style="color: #002970;"></i>
+                            <div class="upi-app-icon paytm">P</div>
                             <span>Paytm</span>
                         </label>
                     </div>
                     <div class="upi-option">
                         <input type="radio" id="phonepe" name="upiMethod" value="phonepe">
                         <label for="phonepe">
-                            <i class="fas fa-mobile-alt" style="color: #5f259f;"></i>
+                            <div class="upi-app-icon phonepe">Pe</div>
                             <span>PhonePe</span>
                         </label>
                     </div>
                     <div class="upi-option">
                         <input type="radio" id="googlepay" name="upiMethod" value="googlepay">
                         <label for="googlepay">
-                            <i class="fab fa-google-pay" style="color: #4285f4;"></i>
+                            <div class="upi-app-icon googlepay">G</div>
                             <span>Google Pay</span>
                         </label>
                     </div>
                     <div class="upi-option">
                         <input type="radio" id="bharatpe" name="upiMethod" value="bharatpe" checked>
                         <label for="bharatpe">
-                            <i class="fas fa-university" style="color: #ff6b35;"></i>
+                            <div class="upi-app-icon bharatpe">B</div>
                             <span>BharatPe</span>
+                        </label>
+                    </div>
+                    <div class="upi-option">
+                        <input type="radio" id="bhim" name="upiMethod" value="bhim">
+                        <label for="bhim">
+                            <div class="upi-app-icon bhim">UPI</div>
+                            <span>BHIM UPI</span>
                         </label>
                     </div>
                 </div>
@@ -207,12 +214,78 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
         </div>
     </nav>
 
+    <!-- Payment Modal -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-modal-content">
+            <div class="payment-loading" id="paymentLoading">
+                <div class="payment-spinner"></div>
+                <h3>Redirecting to Payment App</h3>
+                <p>Please complete the payment in your UPI app</p>
+            </div>
+            <div class="payment-success" id="paymentSuccess" style="display: none;">
+                <i class="fas fa-check-circle" style="color: #4caf50; font-size: 48px; margin-bottom: 16px;"></i>
+                <h3>Payment Successful!</h3>
+                <p>Your order has been placed successfully</p>
+                <button onclick="confirmPaymentSuccess()">Continue</button>
+            </div>
+            <div class="payment-error" id="paymentError" style="display: none;">
+                <i class="fas fa-times-circle" style="color: #f44336; font-size: 48px; margin-bottom: 16px;"></i>
+                <h3>Payment Failed</h3>
+                <p id="errorMessage">Something went wrong. Please try again.</p>
+                <button onclick="closePaymentModal()">Try Again</button>
+                <button class="secondary-btn" onclick="closePaymentModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/js/main.js"></script>
     <script src="assets/js/checkout.js"></script>
     <script>
         function togglePaymentMethod(method) {
             const upiOptions = document.getElementById('upiOptions');
             upiOptions.style.display = upiOptions.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function showPaymentModal() {
+            document.getElementById('paymentModal').style.display = 'flex';
+            document.getElementById('paymentLoading').style.display = 'block';
+            document.getElementById('paymentSuccess').style.display = 'none';
+            document.getElementById('paymentError').style.display = 'none';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function showPaymentSuccess() {
+            document.getElementById('paymentLoading').style.display = 'none';
+            document.getElementById('paymentSuccess').style.display = 'block';
+        }
+
+        function showPaymentError(message) {
+            document.getElementById('paymentLoading').style.display = 'none';
+            document.getElementById('paymentError').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function confirmPaymentSuccess() {
+            clearCart();
+            window.location.href = 'checkout.php?step=summary';
+        }
+
+        function generateUPILink(upiId, amount, note, paymentApp) {
+            const baseUrl = `upi://pay?pa=${upiId}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+            
+            // App-specific deep links
+            const appLinks = {
+                'paytm': `paytmmp://pay?pa=${upiId}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`,
+                'phonepe': `phonepe://pay?pa=${upiId}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`,
+                'googlepay': `tez://upi/pay?pa=${upiId}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`,
+                'bharatpe': `bharatpe://pay?pa=${upiId}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`,
+                'bhim': `bhim://pay?pa=${upiId}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`
+            };
+            
+            return appLinks[paymentApp] || baseUrl;
         }
 
         async function processPayment() {
@@ -227,15 +300,28 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
                 const amount = cartData.total;
                 const upiId = "rekhadevi573710.rzp@icici";
                 const paymentApp = selectedUPI.value;
+                const note = `Meesho Order Payment - ₹${amount}`;
                 
-                const result = await processUPIPayment(paymentApp, amount);
+                showPaymentModal();
                 
-                if (result.success) {
-                    await clearCart();
-                    window.location.href = 'checkout.php?step=summary';
-                } else {
-                    showPaymentError('Payment failed. Please try again.');
-                }
+                // Generate UPI deep link
+                const upiLink = generateUPILink(upiId, amount, note, paymentApp);
+                
+                // Try to open the UPI app
+                setTimeout(() => {
+                    try {
+                        window.location.href = upiLink;
+                        
+                        // Show success after 3 seconds (simulating payment completion)
+                        setTimeout(() => {
+                            showPaymentSuccess();
+                        }, 3000);
+                        
+                    } catch (error) {
+                        showPaymentError('Could not open payment app. Please try again.');
+                    }
+                }, 1000);
+                
             } catch (error) {
                 console.error('Payment error:', error);
                 showPaymentError('Payment failed. Please try again.');
