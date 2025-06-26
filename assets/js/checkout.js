@@ -364,7 +364,7 @@ const checkoutStyles = `
 }
 
 .copy-btn {
-    background: #9C27B0;
+    background: #FF1744;
     color: white;
 }
 
@@ -380,7 +380,7 @@ const checkoutStyles = `
 }
 
 .continue-btn {
-    background: #9C27B0;
+    background: #FF1744;
     color: white;
 }
 
@@ -398,7 +398,7 @@ const checkoutStyles = `
 
 .loading-content i {
     font-size: 40px;
-    color: #9C27B0;
+    color: #FF1744;
     margin-bottom: 20px;
 }
 </style>

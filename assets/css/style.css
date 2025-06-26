@@ -48,7 +48,7 @@ body {
 .logo-text {
     font-size: 24px;
     font-weight: bold;
-    color: #9C27B0;
+    color: #FF1744;
 }
 
 .page-title {
@@ -72,7 +72,7 @@ body {
 .cart-icon {
     position: relative;
     font-size: 20px;
-    color: #9C27B0;
+    color: #FF1744;
     cursor: pointer;
 }
 
@@ -158,11 +158,11 @@ body {
     justify-content: center;
     margin-bottom: 8px;
     font-size: 24px;
-    color: #9C27B0;
+    color: #FF1744;
 }
 
 .category-item.active .category-icon {
-    background: #9C27B0;
+    background: #FF1744;
     color: white;
 }
 
@@ -257,7 +257,7 @@ body {
 
 .feature-item i {
     font-size: 20px;
-    color: #9C27B0;
+    color: #FF1744;
 }
 
 .feature-item div {
@@ -438,7 +438,7 @@ body {
 }
 
 .nav-item.active {
-    color: #9C27B0;
+    color: #FF1744;
 }
 
 .nav-item i {
@@ -488,7 +488,7 @@ body {
 }
 
 .indicator.active {
-    background: #9C27B0;
+    background: #FF1744;
 }
 
 .similar-products {
@@ -507,7 +507,7 @@ body {
     height: 60px;
     border-radius: 8px;
     overflow: hidden;
-    border: 2px solid #9C27B0;
+    border: 2px solid #FF1744;
 }
 
 .similar-item img {
@@ -667,8 +667,8 @@ body {
 }
 
 .size-btn.active {
-    border-color: #9C27B0;
-    color: #9C27B0;
+    border-color: #FF1744;
+    color: #FF1744;
 }
 
 .product-details {
@@ -712,7 +712,7 @@ body {
 
 .dress-details li:before {
     content: "•";
-    color: #9C27B0;
+    color: #FF1744;
     position: absolute;
     left: 0;
 }
@@ -773,12 +773,12 @@ body {
 
 .add-to-cart-btn {
     background: white;
-    color: #9C27B0;
+    color: #FF1744;
     border-right: 1px solid #e0e0e0;
 }
 
 .buy-now-btn {
-    background: #9C27B0;
+    background: #FF1744;
     color: white;
 }
 
@@ -814,7 +814,7 @@ body {
 }
 
 .step.active .step-number {
-    background: #9C27B0;
+    background: #FF1744;
 }
 
 .step.completed .step-number {
@@ -828,7 +828,7 @@ body {
 }
 
 .step.active span {
-    color: #9C27B0;
+    color: #FF1744;
     font-weight: bold;
 }
 
@@ -939,7 +939,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: #9C27B0;
+    color: #FF1744;
     font-weight: bold;
     margin-bottom: 15px;
 }
@@ -957,7 +957,7 @@ body {
 
 .safety-image i {
     font-size: 40px;
-    color: #9C27B0;
+    color: #FF1744;
 }
 
 .continue-section, .checkout-action {
@@ -986,13 +986,13 @@ body {
 
 .price-details {
     font-size: 12px;
-    color: #9C27B0;
+    color: #FF1744;
     text-decoration: underline;
     cursor: pointer;
 }
 
 .continue-btn, .action-btn {
-    background: #9C27B0;
+    background: #FF1744;
     color: white;
     border: none;
     padding: 12px 30px;
@@ -1019,7 +1019,7 @@ body {
 }
 
 .empty-cart button {
-    background: #9C27B0;
+    background: #FF1744;
     color: white;
     border: none;
     padding: 12px 30px;
@@ -1042,7 +1042,7 @@ body {
 }
 
 .section-header i {
-    color: #9C27B0;
+    color: #FF1744;
     font-size: 20px;
 }
 
@@ -1101,7 +1101,7 @@ body {
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #9C27B0;
+    border-color: #FF1744;
 }
 
 .payment-offer {
