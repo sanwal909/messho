@@ -46,26 +46,31 @@ if (!isset($_SESSION['cart'])) {
     <!-- Categories -->
     <div class="categories-section">
         <div class="category-item active" onclick="filterCategory('all')">
-            <div class="category-icon">
-                <i class="fas fa-th-large"></i>
+            <div class="category-icon category-grid">
+                <div class="grid-squares">
+                    <div class="square pink"></div>
+                    <div class="square orange"></div>
+                    <div class="square blue"></div>
+                    <div class="square yellow"></div>
+                </div>
             </div>
             <span>Categories</span>
         </div>
         <div class="category-item" onclick="filterCategory('kurtis')">
-            <div class="category-icon">
-                <i class="fas fa-tshirt"></i>
+            <div class="category-icon kurti-icon">
+                <img src="https://cdn.pixabay.com/photo/2017/08/01/11/48/woman-2564660_1280.jpg" alt="Kurtis">
             </div>
             <span>Kurtis</span>
         </div>
         <div class="category-item" onclick="filterCategory('suits')">
-            <div class="category-icon">
-                <i class="fas fa-female"></i>
+            <div class="category-icon suit-icon">
+                <img src="https://cdn.pixabay.com/photo/2018/03/12/20/57/woman-3220835_1280.jpg" alt="Kurti 2 Com">
             </div>
             <span>Kurti 2 Com..</span>
         </div>
         <div class="category-item" onclick="filterCategory('combos')">
-            <div class="category-icon">
-                <i class="fas fa-users"></i>
+            <div class="category-icon combo-icon">
+                <img src="https://cdn.pixabay.com/photo/2016/03/27/07/08/fashion-1282310_1280.jpg" alt="Kurti 3 Com">
             </div>
             <span>Kurti 3 Com..</span>
         </div>
