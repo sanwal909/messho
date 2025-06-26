@@ -58,19 +58,19 @@ if (!isset($_SESSION['cart'])) {
         </div>
         <div class="category-item" onclick="filterCategory('kurtis')">
             <div class="category-icon">
-                <img src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png" alt="Kurtis">
+                <img src="https://images.meesho.com/images/marketing/1678713208343.jpg" alt="Kurtis">
             </div>
             <span>Kurtis</span>
         </div>
         <div class="category-item" onclick="filterCategory('suits')">
             <div class="category-icon">
-                <img src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359554_1280.png" alt="Kurti 2 Com">
+                <img src="https://images.meesho.com/images/marketing/1678713171485.jpg" alt="Kurti 2 Com">
             </div>
             <span>Kurti 2 Com..</span>
         </div>
         <div class="category-item" onclick="filterCategory('combos')">
             <div class="category-icon">
-                <img src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359555_1280.png" alt="Kurti 3 Com">
+                <img src="https://images.meesho.com/images/marketing/1678713190025.jpg" alt="Kurti 3 Com">
             </div>
             <span>Kurti 3 Com..</span>
         </div>
