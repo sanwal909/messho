@@ -10,7 +10,7 @@ if (!isset($_SESSION['cart'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meesho - Online Shopping for Women Dresses, Kurtis & More</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/meesho-exact.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -58,19 +58,19 @@ if (!isset($_SESSION['cart'])) {
         </div>
         <div class="category-item" onclick="filterCategory('kurtis')">
             <div class="category-icon">
-                <img src="https://images.meesho.com/images/products/95391018/wohqy_512.webp" alt="Kurtis">
+                <img src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png" alt="Kurtis">
             </div>
             <span>Kurtis</span>
         </div>
         <div class="category-item" onclick="filterCategory('suits')">
             <div class="category-icon">
-                <img src="https://images.meesho.com/images/products/95391019/wohar_512.webp" alt="Kurti 2 Com">
+                <img src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359554_1280.png" alt="Kurti 2 Com">
             </div>
             <span>Kurti 2 Com..</span>
         </div>
         <div class="category-item" onclick="filterCategory('combos')">
             <div class="category-icon">
-                <img src="https://images.meesho.com/images/products/95391020/wohax_512.webp" alt="Kurti 3 Com">
+                <img src="https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359555_1280.png" alt="Kurti 3 Com">
             </div>
             <span>Kurti 3 Com..</span>
         </div>
