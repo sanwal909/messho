@@ -65,7 +65,7 @@ function displayProducts(productsToShow) {
                     </span>
                 </div>
                 <div class="product-actions">
-                        <button class="add-to-cart" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')}, 'M')">Add to Cart</button>
+                    
                     </div>
             </div>
         </div>
