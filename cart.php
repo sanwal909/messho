@@ -112,10 +112,6 @@ if (!isset($_SESSION['cart'])) {
 
     <!-- Cart Total -->
     <div class="cart-total" id="cartTotal" style="display: none;">
-        <div class="total-row">
-            <span class="total-label">Total Amount</span>
-            <span class="total-amount" id="totalAmount">₹0</span>
-        </div>
         <button class="continue-shopping-btn" onclick="proceedToCheckout()">
             Continue to Address
         </button>
@@ -210,7 +206,6 @@ if (!isset($_SESSION['cart'])) {
                 document.getElementById('itemsPrice').textContent = `₹${totalOriginalPrice}`;
                 document.getElementById('discountValue').textContent = `₹${discount}`;
                 document.getElementById('finalTotal').textContent = `₹${cartData.total}`;
-                document.getElementById('totalAmount').textContent = `₹${cartData.total}`;
 
                 // Show savings info if there's a discount
                 const savingsInfo = document.getElementById('savingsInfo');
