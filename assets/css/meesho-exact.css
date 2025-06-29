@@ -570,6 +570,7 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     touch-action: pan-y pinch-zoom;
+    border-radius: 0 0 12px 12px;
 }
 
 .main-image:active {
@@ -580,9 +581,38 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.2s ease;
     pointer-events: none;
-    will-change: transform;
+    will-change: transform, opacity;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Swipe hint overlay */
+.main-image::before {
+    content: '← Swipe to navigate →';
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.main-image:hover::before {
+    opacity: 1;
+}
+
+/* Enhanced swipe feedback */
+.main-image.swiping img {
+    transition: none;
 }
 
 .image-indicators {
@@ -594,25 +624,54 @@ body {
 }
 
 .indicator {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: #ddd;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     touch-action: manipulation;
+    position: relative;
+    margin: 4px;
+}
+
+.indicator::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 50%;
+    background: transparent;
 }
 
 .indicator:hover,
 .indicator:active {
     background: #bbb;
-    transform: scale(1.2);
+    transform: scale(1.3);
 }
 
 .indicator.active {
     background: #e60965;
-    transform: scale(1.4);
-    box-shadow: 0 2px 8px rgba(230, 9, 101, 0.3);
+    transform: scale(1.5);
+    box-shadow: 0 3px 12px rgba(230, 9, 101, 0.4);
+}
+
+/* Touch-friendly indicator spacing */
+@media (max-width: 768px) {
+    .indicator {
+        width: 14px;
+        height: 14px;
+        margin: 6px;
+    }
+    
+    .indicator::before {
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+    }
 }
 
 .similar-products {

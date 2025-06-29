@@ -160,14 +160,22 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
         }
 
         function showImage(index) {
-            if (productImages.length > 0) {
-                currentImageIndex = index;
-                document.getElementById('productImage').src = productImages[index];
+            if (productImages.length > 0 && index !== currentImageIndex) {
+                const imageElement = document.getElementById('productImage');
                 
-                // Update indicators
-                document.querySelectorAll('.indicator').forEach((ind, i) => {
-                    ind.classList.toggle('active', i === index);
-                });
+                // Smooth fade transition
+                imageElement.style.opacity = '0.5';
+                
+                setTimeout(() => {
+                    currentImageIndex = index;
+                    imageElement.src = productImages[index];
+                    imageElement.style.opacity = '1';
+                    
+                    // Update indicators with animation
+                    document.querySelectorAll('.indicator').forEach((ind, i) => {
+                        ind.classList.toggle('active', i === index);
+                    });
+                }, 150);
             }
         }
 
@@ -179,75 +187,192 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
                 const indicator = document.createElement('div');
                 indicator.className = `indicator ${index === 0 ? 'active' : ''}`;
                 indicator.onclick = () => showImage(index);
+                indicator.setAttribute('data-index', index);
                 indicatorContainer.appendChild(indicator);
             });
         }
 
         function nextImage() {
-            if (productImages.length > 0) {
-                currentImageIndex = (currentImageIndex + 1) % productImages.length;
-                showImage(currentImageIndex);
+            if (productImages.length > 1) {
+                const nextIndex = (currentImageIndex + 1) % productImages.length;
+                showImage(nextIndex);
+                
+                // Visual feedback
+                showSwipeMessage('Next Image');
             }
         }
 
         function previousImage() {
-            if (productImages.length > 0) {
-                currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
-                showImage(currentImageIndex);
+            if (productImages.length > 1) {
+                const prevIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
+                showImage(prevIndex);
+                
+                // Visual feedback
+                showSwipeMessage('Previous Image');
             }
         }
 
-        // Touch swipe functionality
+        function showSwipeMessage(message) {
+            const existingMessage = document.querySelector('.swipe-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'swipe-message';
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                pointer-events: none;
+            `;
+            
+            document.querySelector('.main-image').appendChild(messageDiv);
+            
+            // Animate in
+            setTimeout(() => {
+                messageDiv.style.opacity = '1';
+            }, 10);
+            
+            // Remove after 1 second
+            setTimeout(() => {
+                messageDiv.style.opacity = '0';
+                setTimeout(() => messageDiv.remove(), 300);
+            }, 1000);
+        }
+
+        // Touch swipe functionality - Enhanced
         let touchStartX = 0;
         let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
         let isSwiping = false;
+        let swipeStarted = false;
 
         function handleTouchStart(e) {
-            touchStartX = e.changedTouches[0].screenX;
-            isSwiping = true;
+            const touch = e.changedTouches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            isSwiping = false;
+            swipeStarted = true;
+            
+            // Add visual feedback
+            const mainImage = document.querySelector('.main-image img');
+            if (mainImage) {
+                mainImage.style.transition = 'none';
+            }
         }
 
         function handleTouchMove(e) {
-            if (!isSwiping) return;
-            e.preventDefault(); // Prevent scrolling
+            if (!swipeStarted) return;
+            
+            const touch = e.changedTouches[0];
+            const currentX = touch.clientX;
+            const currentY = touch.clientY;
+            
+            const deltaX = Math.abs(currentX - touchStartX);
+            const deltaY = Math.abs(currentY - touchStartY);
+            
+            // Only prevent default if horizontal swipe
+            if (deltaX > deltaY && deltaX > 10) {
+                e.preventDefault();
+                isSwiping = true;
+                
+                // Add smooth visual feedback during swipe
+                const mainImage = document.querySelector('.main-image img');
+                if (mainImage) {
+                    const swipeDistance = currentX - touchStartX;
+                    const opacity = Math.max(0.7, 1 - Math.abs(swipeDistance) / 200);
+                    mainImage.style.opacity = opacity;
+                }
+            }
         }
 
         function handleTouchEnd(e) {
-            if (!isSwiping) return;
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
+            if (!swipeStarted) return;
+            
+            const touch = e.changedTouches[0];
+            touchEndX = touch.clientX;
+            touchEndY = touch.clientY;
+            
+            // Reset visual state
+            const mainImage = document.querySelector('.main-image img');
+            if (mainImage) {
+                mainImage.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                mainImage.style.opacity = '1';
+            }
+            
+            if (isSwiping) {
+                handleSwipe();
+            }
+            
+            swipeStarted = false;
             isSwiping = false;
         }
 
         function handleSwipe() {
-            const swipeThreshold = 50; // minimum swipe distance
-            const swipeDistance = Math.abs(touchEndX - touchStartX);
+            const swipeThreshold = 50;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = Math.abs(touchEndY - touchStartY);
             
-            if (swipeDistance > swipeThreshold) {
-                if (touchEndX < touchStartX) {
+            // Make sure it's a horizontal swipe
+            if (Math.abs(deltaX) > swipeThreshold && Math.abs(deltaX) > deltaY) {
+                if (deltaX < 0) {
                     // Swipe left - next image
                     nextImage();
-                } else if (touchEndX > touchStartX) {
-                    // Swipe right - previous image
+                } else {
+                    // Swipe right - previous image  
                     previousImage();
                 }
             }
         }
 
-        // Add touch event listeners to main image
+        // Keyboard support for desktop
+        function handleKeydown(e) {
+            if (e.key === 'ArrowLeft') {
+                previousImage();
+            } else if (e.key === 'ArrowRight') {
+                nextImage();
+            }
+        }
+
+        // Setup all event listeners
         function setupTouchEvents() {
             const mainImage = document.querySelector('.main-image');
             if (mainImage) {
-                // Remove existing listeners first
+                // Remove existing listeners
                 mainImage.removeEventListener('touchstart', handleTouchStart);
                 mainImage.removeEventListener('touchmove', handleTouchMove);
                 mainImage.removeEventListener('touchend', handleTouchEnd);
                 
-                // Add new listeners
+                // Add touch listeners
                 mainImage.addEventListener('touchstart', handleTouchStart, { passive: false });
                 mainImage.addEventListener('touchmove', handleTouchMove, { passive: false });
                 mainImage.addEventListener('touchend', handleTouchEnd, { passive: false });
+                
+                // Add visual indicator
+                mainImage.style.cursor = 'grab';
+                mainImage.addEventListener('mousedown', () => {
+                    mainImage.style.cursor = 'grabbing';
+                });
+                mainImage.addEventListener('mouseup', () => {
+                    mainImage.style.cursor = 'grab';
+                });
             }
+            
+            // Add keyboard support
+            document.addEventListener('keydown', handleKeydown);
         }
 
         async function addToCart() {
