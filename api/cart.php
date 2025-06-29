@@ -15,16 +15,16 @@ switch ($_SERVER['REQUEST_METHOD']) {
         foreach ($_SESSION['cart'] as $item) {
             $cartItems[] = [
                 'product' => [
-                    'id' => $item['id'],
-                    'name' => $item['name'],
-                    'price' => $item['price'],
-                    'originalPrice' => $item['originalPrice'],
-                    'image' => $item['image']
+                    'id' => $item['id'] ?? 0,
+                    'name' => $item['name'] ?? 'Unknown Product',
+                    'price' => $item['price'] ?? 0,
+                    'originalPrice' => $item['originalPrice'] ?? 0,
+                    'image' => $item['image'] ?? 'placeholder.jpg'
                 ],
-                'size' => $item['size'],
-                'quantity' => $item['quantity']
+                'size' => $item['size'] ?? 'M',
+                'quantity' => $item['quantity'] ?? 1
             ];
-            $total += $item['price'] * $item['quantity'];
+            $total += ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
         }
         
         echo json_encode([
@@ -55,12 +55,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
             
             if (!$found) {
                 $_SESSION['cart'][] = [
-                    'id' => $input['productId'],
-                    'name' => $input['name'],
-                    'price' => $input['price'],
-                    'originalPrice' => $input['originalPrice'],
-                    'image' => $input['image'],
-                    'size' => $input['size'],
+                    'id' => $input['productId'] ?? 0,
+                    'name' => $input['name'] ?? 'Unknown Product',
+                    'price' => $input['price'] ?? 0,
+                    'originalPrice' => $input['originalPrice'] ?? 0,
+                    'image' => $input['image'] ?? 'placeholder.jpg',
+                    'size' => $input['size'] ?? 'M',
                     'quantity' => 1
                 ];
             }

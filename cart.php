@@ -121,7 +121,7 @@ if (!isset($_SESSION['cart'])) {
                 const cartItemsContainer = document.getElementById('cartItems');
                 const emptyCart = document.getElementById('emptyCart');
                 const cartTotal = document.getElementById('cartTotal');
-                
+
                 if (!cartData.items || cartData.items.length === 0) {
                     cartItemsContainer.style.display = 'none';
                     emptyCart.style.display = 'block';
@@ -134,7 +134,7 @@ if (!isset($_SESSION['cart'])) {
                 cartTotal.style.display = 'block';
 
                 cartItemsContainer.innerHTML = '';
-                
+
                 cartData.items.forEach(item => {
                     const cartItemHTML = `
                         <div class="cart-item" data-product-id="${item.product.id}" data-size="${item.size}">
@@ -167,7 +167,7 @@ if (!isset($_SESSION['cart'])) {
                 });
 
                 document.getElementById('totalAmount').textContent = `₹${cartData.total}`;
-                
+
             } catch (error) {
                 console.error('Error loading cart:', error);
             }
@@ -178,7 +178,7 @@ if (!isset($_SESSION['cart'])) {
                 await removeFromCart(productId, size);
                 return;
             }
-            
+
             try {
                 await updateCartQuantity(productId, size, newQuantity);
                 await loadCartItems();
