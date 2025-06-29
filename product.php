@@ -341,10 +341,12 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        action: 'add',
                         productId: currentProduct.id,
-                        size: selectedSize,
-                        quantity: 1
+                        name: currentProduct.name,
+                        price: currentProduct.price,
+                        originalPrice: currentProduct.originalPrice,
+                        image: currentProduct.image,
+                        size: selectedSize
                     })
                 });
                 
