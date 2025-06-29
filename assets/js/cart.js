@@ -2,6 +2,12 @@
 
 // Add product to cart
 async function addProductToCart(product, size = 'M') {
+    // Validate product data before sending
+    if (!product || !product.id || !product.name || !product.price) {
+        console.error('Invalid product data provided to addProductToCart:', product);
+        return false;
+    }
+    
     try {
         const response = await fetch('api/cart.php', {
             method: 'POST',
@@ -12,8 +18,8 @@ async function addProductToCart(product, size = 'M') {
                 productId: product.id,
                 name: product.name,
                 price: product.price,
-                originalPrice: product.originalPrice,
-                image: product.image,
+                originalPrice: product.originalPrice || product.price,
+                image: product.image || 'placeholder.jpg',
                 size: size
             })
         });

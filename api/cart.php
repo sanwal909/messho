@@ -38,10 +38,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
         // Add item to cart
         $input = json_decode(file_get_contents('php://input'), true);
         
-        if ($input) {
+        if ($input && isset($input['productId']) && isset($input['name']) && isset($input['price'])) {
+            // Validate required fields
+            if (empty($input['productId']) || empty($input['name']) || $input['price'] <= 0) {
+                echo json_encode(['success' => false, 'error' => 'Invalid product data']);
+                break;
+            }
+            
             $productId = $input['productId'];
-            $size = $input['size'];
-            $key = $productId . '_' . $size;
+            $size = $input['size'] ?? 'M';
             
             // Check if item already exists
             $found = false;
@@ -55,19 +60,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
             
             if (!$found) {
                 $_SESSION['cart'][] = [
-                    'id' => $input['productId'] ?? 0,
-                    'name' => $input['name'] ?? 'Unknown Product',
-                    'price' => $input['price'] ?? 0,
-                    'originalPrice' => $input['originalPrice'] ?? 0,
+                    'id' => $input['productId'],
+                    'name' => $input['name'],
+                    'price' => $input['price'],
+                    'originalPrice' => $input['originalPrice'] ?? $input['price'],
                     'image' => $input['image'] ?? 'placeholder.jpg',
-                    'size' => $input['size'] ?? 'M',
+                    'size' => $size,
                     'quantity' => 1
                 ];
             }
             
             echo json_encode(['success' => true]);
         } else {
-            echo json_encode(['success' => false, 'error' => 'Invalid input']);
+            echo json_encode(['success' => false, 'error' => 'Missing required product data']);
         }
         break;
         

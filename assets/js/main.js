@@ -246,7 +246,16 @@ function calculateDiscount(original, current) {
 
 // Add to cart function
 async function addToCart(product, size = 'M') {
-    event.stopPropagation(); // Prevent product card click
+    if (event) {
+        event.stopPropagation(); // Prevent product card click
+    }
+    
+    // Validate product data
+    if (!product || !product.id || !product.name || !product.price) {
+        console.error('Invalid product data:', product);
+        showNotification('Invalid product data', 'error');
+        return;
+    }
     
     try {
         const success = await addProductToCart(product, size);
