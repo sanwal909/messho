@@ -41,19 +41,7 @@ if ($_POST && isset($_POST['action'])) {
             } else {
                 $error = "Failed to upload images!";
             }
-        } elseif (!empty($_POST['main_existing_image'])) {
-            // Existing images selected
-            $imagePath = $_POST['main_existing_image'];
-            $allImages[] = $imagePath;
-            
-            // Add additional existing images
-            if (!empty($_POST['additional_existing_images'])) {
-                foreach ($_POST['additional_existing_images'] as $additionalImage) {
-                    if ($additionalImage !== $imagePath) {
-                        $allImages[] = $additionalImage;
-                    }
-                }
-            }
+        
         } elseif (!empty($_POST['main_image_url'])) {
             // URL provided
             $imagePath = $_POST['main_image_url'];
@@ -343,33 +331,7 @@ $products = json_decode(file_get_contents('data/products.json'), true);
                             <div id="image_preview_container" style="margin-top: 10px;"></div>
                         </div>
                         
-                        <div class="image-option" style="margin-top: 15px;">
-                            <input type="radio" id="use_existing" name="image_option" value="existing">
-                            <label for="use_existing" style="margin-left: 8px; font-weight: normal;">Use Existing Images</label>
-                            <div style="margin-top: 8px;">
-                                <select id="main_existing_image" name="main_existing_image" style="width: 100%; margin-bottom: 8px;" disabled>
-                                    <option value="">Select main image...</option>
-                                    <?php
-                                    $dataDir = 'data/';
-                                    $images = glob($dataDir . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
-                                    foreach ($images as $image) {
-                                        echo '<option value="' . $image . '">' . basename($image) . '</option>';
-                                    }
-                                    ?>
-                                </select>
-                                <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 8px; border-radius: 4px;">
-                                    <label style="font-size: 12px; color: #666; margin-bottom: 8px; display: block;">Additional Images (Optional):</label>
-                                    <?php
-                                    foreach ($images as $image) {
-                                        echo '<div style="margin-bottom: 4px;">';
-                                        echo '<input type="checkbox" id="existing_' . md5($image) . '" name="additional_existing_images[]" value="' . $image . '" style="width: auto; margin-right: 8px;" disabled>';
-                                        echo '<label for="existing_' . md5($image) . '" style="font-weight: normal; font-size: 12px;">' . basename($image) . '</label>';
-                                        echo '</div>';
-                                    }
-                                    ?>
-                                </div>
-                            </div>
-                        </div>
+                        
                         
                         <div class="image-option" style="margin-top: 15px;">
                             <input type="radio" id="use_url" name="image_option" value="url">
@@ -433,17 +395,12 @@ $products = json_decode(file_get_contents('data/products.json'), true);
             radio.addEventListener('change', function() {
                 // Disable all inputs first
                 document.getElementById('product_images').disabled = true;
-                document.getElementById('main_existing_image').disabled = true;
-                document.querySelectorAll('input[name="additional_existing_images[]"]').forEach(cb => cb.disabled = true);
                 document.getElementById('main_image_url').disabled = true;
                 document.getElementById('additional_image_urls').disabled = true;
                 
                 // Enable the selected option
                 if (this.value === 'upload') {
                     document.getElementById('product_images').disabled = false;
-                } else if (this.value === 'existing') {
-                    document.getElementById('main_existing_image').disabled = false;
-                    document.querySelectorAll('input[name="additional_existing_images[]"]').forEach(cb => cb.disabled = false);
                 } else if (this.value === 'url') {
                     document.getElementById('main_image_url').disabled = false;
                     document.getElementById('additional_image_urls').disabled = false;
@@ -489,22 +446,7 @@ $products = json_decode(file_get_contents('data/products.json'), true);
             });
         });
 
-        // Existing image preview
-        document.getElementById('main_existing_image').addEventListener('change', function() {
-            const existingPreview = document.querySelector('.existing-preview-image');
-            if (existingPreview) {
-                existingPreview.remove();
-            }
-            
-            if (this.value) {
-                const img = document.createElement('img');
-                img.src = this.value;
-                img.className = 'existing-preview-image preview-image';
-                img.alt = 'Main Image Preview';
-                img.style.marginTop = '8px';
-                this.parentNode.appendChild(img);
-            }
-        });
+        
     </script>
 </body>
 </html>
