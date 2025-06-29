@@ -17,25 +17,61 @@ if ($_POST && isset($_POST['action'])) {
         
         // Handle image upload or URL
         $imagePath = '';
-        if (!empty($_FILES['product_image']['name'])) {
-            // File upload
+        $allImages = [];
+        
+        if (!empty($_FILES['product_images']['name'][0])) {
+            // Multiple file upload
             $uploadDir = 'data/';
-            $fileName = time() . '_' . $_FILES['product_image']['name'];
-            $uploadPath = $uploadDir . $fileName;
+            $uploadedImages = [];
             
-            if (move_uploaded_file($_FILES['product_image']['tmp_name'], $uploadPath)) {
-                $imagePath = $uploadPath;
-            } else {
-                $error = "Failed to upload image!";
+            foreach ($_FILES['product_images']['name'] as $key => $fileName) {
+                if (!empty($fileName)) {
+                    $newFileName = time() . '_' . $key . '_' . $fileName;
+                    $uploadPath = $uploadDir . $newFileName;
+                    
+                    if (move_uploaded_file($_FILES['product_images']['tmp_name'][$key], $uploadPath)) {
+                        $uploadedImages[] = $uploadPath;
+                    }
+                }
             }
-        } elseif (!empty($_POST['existing_image'])) {
-            // Existing image selected
-            $imagePath = $_POST['existing_image'];
-        } elseif (!empty($_POST['image_url'])) {
+            
+            if (!empty($uploadedImages)) {
+                $imagePath = $uploadedImages[0]; // First image as main
+                $allImages = $uploadedImages;
+            } else {
+                $error = "Failed to upload images!";
+            }
+        } elseif (!empty($_POST['main_existing_image'])) {
+            // Existing images selected
+            $imagePath = $_POST['main_existing_image'];
+            $allImages[] = $imagePath;
+            
+            // Add additional existing images
+            if (!empty($_POST['additional_existing_images'])) {
+                foreach ($_POST['additional_existing_images'] as $additionalImage) {
+                    if ($additionalImage !== $imagePath) {
+                        $allImages[] = $additionalImage;
+                    }
+                }
+            }
+        } elseif (!empty($_POST['main_image_url'])) {
             // URL provided
-            $imagePath = $_POST['image_url'];
+            $imagePath = $_POST['main_image_url'];
+            $allImages[] = $imagePath;
+            
+            // Add additional URLs
+            if (!empty($_POST['additional_image_urls'])) {
+                $additionalUrls = explode("\n", trim($_POST['additional_image_urls']));
+                foreach ($additionalUrls as $url) {
+                    $url = trim($url);
+                    if (!empty($url) && $url !== $imagePath) {
+                        $allImages[] = $url;
+                    }
+                }
+            }
         } else {
             $imagePath = 'placeholder.jpg';
+            $allImages = [$imagePath];
         }
         
         if (!isset($error)) {
@@ -49,6 +85,7 @@ if ($_POST && isset($_POST['action'])) {
                 'rating' => (float)$_POST['rating'],
                 'reviews' => (int)$_POST['reviews'],
                 'image' => $imagePath,
+                'images' => $allImages,
                 'offer' => $_POST['offer']
             ];
             
@@ -198,6 +235,21 @@ $products = json_decode(file_get_contents('data/products.json'), true);
             margin-top: 10px;
             border: 1px solid #ddd;
         }
+        #image_preview_container {
+            border: 1px solid #f0f0f0;
+            border-radius: 6px;
+            padding: 10px;
+            background: #fafafa;
+            min-height: 50px;
+        }
+        #image_preview_container:empty::before {
+            content: 'Selected images will appear here...';
+            color: #999;
+            font-size: 12px;
+            display: block;
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -283,29 +335,47 @@ $products = json_decode(file_get_contents('data/products.json'), true);
                     <div class="image-options">
                         <div class="image-option">
                             <input type="radio" id="upload_new" name="image_option" value="upload" checked>
-                            <label for="upload_new" style="margin-left: 8px; font-weight: normal;">Upload New Image</label>
-                            <input type="file" id="product_image" name="product_image" accept="image/*" style="margin-top: 8px; width: 100%;">
+                            <label for="upload_new" style="margin-left: 8px; font-weight: normal;">Upload Multiple Images</label>
+                            <input type="file" id="product_images" name="product_images[]" accept="image/*" multiple style="margin-top: 8px; width: 100%;">
+                            <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                                आप multiple images select कर सकते हैं। पहली image main image होगी।
+                            </small>
+                            <div id="image_preview_container" style="margin-top: 10px;"></div>
                         </div>
                         
                         <div class="image-option" style="margin-top: 15px;">
                             <input type="radio" id="use_existing" name="image_option" value="existing">
-                            <label for="use_existing" style="margin-left: 8px; font-weight: normal;">Use Existing Image</label>
-                            <select id="existing_image" name="existing_image" style="margin-top: 8px; width: 100%;" disabled>
-                                <option value="">Select existing image...</option>
-                                <?php
-                                $dataDir = 'data/';
-                                $images = glob($dataDir . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
-                                foreach ($images as $image) {
-                                    echo '<option value="' . $image . '">' . basename($image) . '</option>';
-                                }
-                                ?>
-                            </select>
+                            <label for="use_existing" style="margin-left: 8px; font-weight: normal;">Use Existing Images</label>
+                            <div style="margin-top: 8px;">
+                                <select id="main_existing_image" name="main_existing_image" style="width: 100%; margin-bottom: 8px;" disabled>
+                                    <option value="">Select main image...</option>
+                                    <?php
+                                    $dataDir = 'data/';
+                                    $images = glob($dataDir . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
+                                    foreach ($images as $image) {
+                                        echo '<option value="' . $image . '">' . basename($image) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                                <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 8px; border-radius: 4px;">
+                                    <label style="font-size: 12px; color: #666; margin-bottom: 8px; display: block;">Additional Images (Optional):</label>
+                                    <?php
+                                    foreach ($images as $image) {
+                                        echo '<div style="margin-bottom: 4px;">';
+                                        echo '<input type="checkbox" id="existing_' . md5($image) . '" name="additional_existing_images[]" value="' . $image . '" style="width: auto; margin-right: 8px;" disabled>';
+                                        echo '<label for="existing_' . md5($image) . '" style="font-weight: normal; font-size: 12px;">' . basename($image) . '</label>';
+                                        echo '</div>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="image-option" style="margin-top: 15px;">
                             <input type="radio" id="use_url" name="image_option" value="url">
-                            <label for="use_url" style="margin-left: 8px; font-weight: normal;">Use Image URL</label>
-                            <input type="url" id="image_url" name="image_url" placeholder="https://images.meesho.com/images/products/..." style="margin-top: 8px; width: 100%;" disabled>
+                            <label for="use_url" style="margin-left: 8px; font-weight: normal;">Use Image URLs</label>
+                            <input type="url" id="main_image_url" name="main_image_url" placeholder="Main image URL..." style="margin-top: 8px; width: 100%;" disabled>
+                            <textarea id="additional_image_urls" name="additional_image_urls" placeholder="Additional image URLs (one per line)..." style="margin-top: 8px; width: 100%; height: 80px;" disabled></textarea>
                             <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
                                 Use Meesho image URLs like: https://images.meesho.com/images/products/[product-id]/[image-id]_512.webp
                             </small>
@@ -362,49 +432,66 @@ $products = json_decode(file_get_contents('data/products.json'), true);
         document.querySelectorAll('input[name="image_option"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 // Disable all inputs first
-                document.getElementById('product_image').disabled = true;
-                document.getElementById('existing_image').disabled = true;
-                document.getElementById('image_url').disabled = true;
+                document.getElementById('product_images').disabled = true;
+                document.getElementById('main_existing_image').disabled = true;
+                document.querySelectorAll('input[name="additional_existing_images[]"]').forEach(cb => cb.disabled = true);
+                document.getElementById('main_image_url').disabled = true;
+                document.getElementById('additional_image_urls').disabled = true;
                 
                 // Enable the selected option
                 if (this.value === 'upload') {
-                    document.getElementById('product_image').disabled = false;
+                    document.getElementById('product_images').disabled = false;
                 } else if (this.value === 'existing') {
-                    document.getElementById('existing_image').disabled = false;
+                    document.getElementById('main_existing_image').disabled = false;
+                    document.querySelectorAll('input[name="additional_existing_images[]"]').forEach(cb => cb.disabled = false);
                 } else if (this.value === 'url') {
-                    document.getElementById('image_url').disabled = false;
+                    document.getElementById('main_image_url').disabled = false;
+                    document.getElementById('additional_image_urls').disabled = false;
                 }
             });
         });
 
-        // File preview
-        document.getElementById('product_image').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Remove existing preview
-                    const existingPreview = document.querySelector('.preview-image');
-                    if (existingPreview) {
-                        existingPreview.remove();
-                    }
-                    
-                    // Create new preview
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'preview-image';
-                    img.alt = 'Preview';
-                    
-                    // Add after file input
-                    e.target.parentNode.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            }
+        // Multiple file preview
+        document.getElementById('product_images').addEventListener('change', function(e) {
+            const container = document.getElementById('image_preview_container');
+            container.innerHTML = '';
+            
+            Array.from(e.target.files).forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewDiv = document.createElement('div');
+                        previewDiv.style.cssText = 'display: inline-block; margin: 5px; position: relative; border: 2px solid #ddd; border-radius: 6px; padding: 5px;';
+                        
+                        if (index === 0) {
+                            previewDiv.style.borderColor = '#e60965';
+                            const mainLabel = document.createElement('div');
+                            mainLabel.textContent = 'MAIN IMAGE';
+                            mainLabel.style.cssText = 'position: absolute; top: -10px; left: 5px; background: #e60965; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold;';
+                            previewDiv.appendChild(mainLabel);
+                        }
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 4px; display: block;';
+                        img.alt = `Preview ${index + 1}`;
+                        
+                        const fileName = document.createElement('div');
+                        fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
+                        fileName.style.cssText = 'font-size: 10px; text-align: center; margin-top: 4px; color: #666;';
+                        
+                        previewDiv.appendChild(img);
+                        previewDiv.appendChild(fileName);
+                        container.appendChild(previewDiv);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         });
 
         // Existing image preview
-        document.getElementById('existing_image').addEventListener('change', function() {
-            const existingPreview = document.querySelector('.preview-image');
+        document.getElementById('main_existing_image').addEventListener('change', function() {
+            const existingPreview = document.querySelector('.existing-preview-image');
             if (existingPreview) {
                 existingPreview.remove();
             }
@@ -412,8 +499,9 @@ $products = json_decode(file_get_contents('data/products.json'), true);
             if (this.value) {
                 const img = document.createElement('img');
                 img.src = this.value;
-                img.className = 'preview-image';
-                img.alt = 'Preview';
+                img.className = 'existing-preview-image preview-image';
+                img.alt = 'Main Image Preview';
+                img.style.marginTop = '8px';
                 this.parentNode.appendChild(img);
             }
         });
