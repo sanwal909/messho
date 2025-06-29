@@ -15,22 +15,47 @@ if ($_POST && isset($_POST['action'])) {
             }
         }
         
-        $newProduct = [
-            'id' => $maxId + 1,
-            'name' => $_POST['name'],
-            'category' => $_POST['category'],
-            'price' => (int)$_POST['price'],
-            'originalPrice' => (int)$_POST['originalPrice'],
-            'discount' => round((($_POST['originalPrice'] - $_POST['price']) / $_POST['originalPrice']) * 100),
-            'rating' => (float)$_POST['rating'],
-            'reviews' => (int)$_POST['reviews'],
-            'image' => $_POST['image'],
-            'offer' => $_POST['offer']
-        ];
+        // Handle image upload or URL
+        $imagePath = '';
+        if (!empty($_FILES['product_image']['name'])) {
+            // File upload
+            $uploadDir = 'data/';
+            $fileName = time() . '_' . $_FILES['product_image']['name'];
+            $uploadPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['product_image']['tmp_name'], $uploadPath)) {
+                $imagePath = $uploadPath;
+            } else {
+                $error = "Failed to upload image!";
+            }
+        } elseif (!empty($_POST['existing_image'])) {
+            // Existing image selected
+            $imagePath = $_POST['existing_image'];
+        } elseif (!empty($_POST['image_url'])) {
+            // URL provided
+            $imagePath = $_POST['image_url'];
+        } else {
+            $imagePath = 'placeholder.jpg';
+        }
         
-        $products[] = $newProduct;
-        file_put_contents($productsFile, json_encode($products, JSON_PRETTY_PRINT));
-        $message = "Product added successfully!";
+        if (!isset($error)) {
+            $newProduct = [
+                'id' => $maxId + 1,
+                'name' => $_POST['name'],
+                'category' => $_POST['category'],
+                'price' => (int)$_POST['price'],
+                'originalPrice' => (int)$_POST['originalPrice'],
+                'discount' => round((($_POST['originalPrice'] - $_POST['price']) / $_POST['originalPrice']) * 100),
+                'rating' => (float)$_POST['rating'],
+                'reviews' => (int)$_POST['reviews'],
+                'image' => $imagePath,
+                'offer' => $_POST['offer']
+            ];
+            
+            $products[] = $newProduct;
+            file_put_contents($productsFile, json_encode($products, JSON_PRETTY_PRINT));
+            $message = "Product added successfully!";
+        }
     }
 }
 
@@ -146,6 +171,33 @@ $products = json_decode(file_get_contents('data/products.json'), true);
         .form-row .form-group {
             flex: 1;
         }
+        .image-options {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .image-option {
+            margin-bottom: 10px;
+        }
+        .image-option:last-child {
+            margin-bottom: 0;
+        }
+        .image-option input[type="radio"] {
+            width: auto;
+            margin-right: 8px;
+        }
+        .image-option input[disabled], .image-option select[disabled] {
+            background: #f5f5f5;
+            color: #999;
+        }
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -173,9 +225,15 @@ $products = json_decode(file_get_contents('data/products.json'), true);
             </div>
         <?php endif; ?>
 
+        <?php if (isset($error)): ?>
+            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                <i class="fas fa-exclamation-triangle"></i> <?php echo $error; ?>
+            </div>
+        <?php endif; ?>
+
         <div class="form-section">
             <h3><i class="fas fa-box"></i> Product Information</h3>
-            <form method="POST" class="admin-form">
+            <form method="POST" enctype="multipart/form-data" class="admin-form">
                 <input type="hidden" name="action" value="add">
                 
                 <div class="form-group">
@@ -219,12 +277,40 @@ $products = json_decode(file_get_contents('data/products.json'), true);
                     </div>
                 </div>
 
+                <!-- Image Selection Options -->
                 <div class="form-group">
-                    <label for="image">Product Image URL</label>
-                    <input type="url" id="image" name="image" required placeholder="https://images.meesho.com/images/products/...">
-                    <small style="color: #666; font-size: 12px;">
-                        Use Meesho image URLs like: https://images.meesho.com/images/products/[product-id]/[image-id]_512.webp
-                    </small>
+                    <label>Product Image Options</label>
+                    <div class="image-options">
+                        <div class="image-option">
+                            <input type="radio" id="upload_new" name="image_option" value="upload" checked>
+                            <label for="upload_new" style="margin-left: 8px; font-weight: normal;">Upload New Image</label>
+                            <input type="file" id="product_image" name="product_image" accept="image/*" style="margin-top: 8px; width: 100%;">
+                        </div>
+                        
+                        <div class="image-option" style="margin-top: 15px;">
+                            <input type="radio" id="use_existing" name="image_option" value="existing">
+                            <label for="use_existing" style="margin-left: 8px; font-weight: normal;">Use Existing Image</label>
+                            <select id="existing_image" name="existing_image" style="margin-top: 8px; width: 100%;" disabled>
+                                <option value="">Select existing image...</option>
+                                <?php
+                                $dataDir = 'data/';
+                                $images = glob($dataDir . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
+                                foreach ($images as $image) {
+                                    echo '<option value="' . $image . '">' . basename($image) . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        
+                        <div class="image-option" style="margin-top: 15px;">
+                            <input type="radio" id="use_url" name="image_option" value="url">
+                            <label for="use_url" style="margin-left: 8px; font-weight: normal;">Use Image URL</label>
+                            <input type="url" id="image_url" name="image_url" placeholder="https://images.meesho.com/images/products/..." style="margin-top: 8px; width: 100%;" disabled>
+                            <small style="color: #666; font-size: 12px; display: block; margin-top: 4px;">
+                                Use Meesho image URLs like: https://images.meesho.com/images/products/[product-id]/[image-id]_512.webp
+                            </small>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -271,6 +357,66 @@ $products = json_decode(file_get_contents('data/products.json'), true);
                 console.log(`Discount: ${discount}%`);
             }
         }
+
+        // Handle image option changes
+        document.querySelectorAll('input[name="image_option"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Disable all inputs first
+                document.getElementById('product_image').disabled = true;
+                document.getElementById('existing_image').disabled = true;
+                document.getElementById('image_url').disabled = true;
+                
+                // Enable the selected option
+                if (this.value === 'upload') {
+                    document.getElementById('product_image').disabled = false;
+                } else if (this.value === 'existing') {
+                    document.getElementById('existing_image').disabled = false;
+                } else if (this.value === 'url') {
+                    document.getElementById('image_url').disabled = false;
+                }
+            });
+        });
+
+        // File preview
+        document.getElementById('product_image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Remove existing preview
+                    const existingPreview = document.querySelector('.preview-image');
+                    if (existingPreview) {
+                        existingPreview.remove();
+                    }
+                    
+                    // Create new preview
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'preview-image';
+                    img.alt = 'Preview';
+                    
+                    // Add after file input
+                    e.target.parentNode.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Existing image preview
+        document.getElementById('existing_image').addEventListener('change', function() {
+            const existingPreview = document.querySelector('.preview-image');
+            if (existingPreview) {
+                existingPreview.remove();
+            }
+            
+            if (this.value) {
+                const img = document.createElement('img');
+                img.src = this.value;
+                img.className = 'preview-image';
+                img.alt = 'Preview';
+                this.parentNode.appendChild(img);
+            }
+        });
     </script>
 </body>
 </html>
