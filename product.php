@@ -43,11 +43,8 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
             <div class="main-image">
                 <img id="productImage" src="" alt="Product Image">
             </div>
-            <div class="image-indicators">
-                <div class="indicator active"></div>
-                <div class="indicator"></div>
-                <div class="indicator"></div>
-                <div class="indicator"></div>
+            <div class="image-indicators" id="imageIndicators">
+                <!-- Indicators will be generated dynamically -->
             </div>
             <!-- <div class="similar-products">
                 <h4>Similar</h4>
@@ -153,11 +150,37 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
     <script>
         let selectedSize = 'M';
         let currentProduct = null;
+        let currentImageIndex = 0;
+        let productImages = [];
 
         function selectSize(element) {
             document.querySelectorAll('.size-option').forEach(btn => btn.classList.remove('selected'));
             element.classList.add('selected');
             selectedSize = element.dataset.size;
+        }
+
+        function showImage(index) {
+            if (productImages.length > 0) {
+                currentImageIndex = index;
+                document.getElementById('productImage').src = productImages[index];
+                
+                // Update indicators
+                document.querySelectorAll('.indicator').forEach((ind, i) => {
+                    ind.classList.toggle('active', i === index);
+                });
+            }
+        }
+
+        function createImageIndicators() {
+            const indicatorContainer = document.getElementById('imageIndicators');
+            indicatorContainer.innerHTML = '';
+            
+            productImages.forEach((image, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = `indicator ${index === 0 ? 'active' : ''}`;
+                indicator.onclick = () => showImage(index);
+                indicatorContainer.appendChild(indicator);
+            });
         }
 
         async function addToCart() {
@@ -224,7 +247,17 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
                     currentProduct = products.find(p => p.id == productId);
                     
                     if (currentProduct) {
-                        document.getElementById('productImage').src = currentProduct.image;
+                        // Set up product images
+                        productImages = currentProduct.images || [currentProduct.image];
+                        currentImageIndex = 0;
+                        
+                        // Display first image
+                        document.getElementById('productImage').src = productImages[0];
+                        
+                        // Create image indicators
+                        createImageIndicators();
+                        
+                        // Set other product details
                         document.getElementById('productName').textContent = currentProduct.name;
                         document.getElementById('currentPrice').textContent = `₹${currentProduct.price}`;
                         document.getElementById('originalPrice').textContent = `₹${currentProduct.originalPrice}`;

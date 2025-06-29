@@ -9,6 +9,12 @@
     "rating": 4.5,
     "reviews": 1713,
     "image": "data/imgi_453_6D34DF05-C8A5-4FD8-9B16-834904C44F30-scaled.jpg",
+    "images": [
+      "data/imgi_453_6D34DF05-C8A5-4FD8-9B16-834904C44F30-scaled.jpg",
+      "data/imgi_395_FDA402A8-2EAB-460F-8E0D-B8EBE6C903BC-scaled.jpg",
+      "data/imgi_213_2F508122-B184-4A92-B90A-4198FB3FD61E-scaled.jpg",
+      "data/imgi_248_0726CEAD-BE5C-493A-B4A5-5CDD282F99C4-scaled4372.jpg"
+    ],
     "offer": "₹675 with 2 Special Offers"
   },
   {
@@ -21,6 +27,11 @@
     "rating": 4.2,
     "reviews": 6632,
     "image": "data/imgi_453_6D34DF05-C8A5-4FD8-9B16-834904C44F30-scaled.jpg",
+    "images": [
+      "data/imgi_453_6D34DF05-C8A5-4FD8-9B16-834904C44F30-scaled.jpg",
+      "data/imgi_247_0726CEAD-BE5C-493A-B4A5-5CDD282F99C4-scaled.jpg",
+      "data/imgi_239_8653FCFC-180B-4258-BA57-69AC7E0C11E1-scaled.jpg"
+    ],
     "offer": "₹349 with 2 Special Offers"
   },
   {

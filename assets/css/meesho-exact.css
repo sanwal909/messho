@@ -580,15 +580,22 @@ body {
 }
 
 .indicator {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: #ddd;
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator:hover {
+    background: #bbb;
+    transform: scale(1.2);
 }
 
 .indicator.active {
     background: #e60965;
+    transform: scale(1.3);
 }
 
 .similar-products {
