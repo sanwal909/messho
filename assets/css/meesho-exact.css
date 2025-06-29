@@ -39,12 +39,12 @@ body {
     gap: 12px;
 }
 
-.menu-btn {
+.menu-btn, .back-btn {
     background: none;
     border: none;
     font-size: 18px;
     color: #333;
-    padding: 8px;
+    padding: 0;
     cursor: pointer;
 }
 
@@ -848,6 +848,7 @@ body {
     display: flex;
     gap: 12px;
     z-index: 999;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
 }
 
 .add-to-cart-btn, .buy-now-btn {
@@ -1325,7 +1326,7 @@ body {
 /* Similar Products Section */
 .similar-products-section {
     background: white;
-    margin: 12px 0;
+    margin: 12px 0 140px 0;
     padding: 16px;
 }
 

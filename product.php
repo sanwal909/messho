@@ -19,9 +19,7 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <button onclick="window.history.back()" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-            </button>
+            <i class="fas fa-arrow-left back-btn" onclick="window.history.back()"></i>
             <!-- <div class="search-container">
                 <input type="text" placeholder="Try Saree, Kurti or Search by Product Code" id="searchInput">
                 <i class="fas fa-search search-icon"></i>
