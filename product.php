@@ -183,6 +183,56 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
             });
         }
 
+        function nextImage() {
+            if (productImages.length > 0) {
+                currentImageIndex = (currentImageIndex + 1) % productImages.length;
+                showImage(currentImageIndex);
+            }
+        }
+
+        function previousImage() {
+            if (productImages.length > 0) {
+                currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
+                showImage(currentImageIndex);
+            }
+        }
+
+        // Touch swipe functionality
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }
+
+        function handleSwipe() {
+            const swipeThreshold = 50; // minimum swipe distance
+            
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe left - next image
+                nextImage();
+            }
+            
+            if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe right - previous image
+                previousImage();
+            }
+        }
+
+        // Add touch event listeners to main image
+        function setupTouchEvents() {
+            const mainImage = document.querySelector('.main-image');
+            if (mainImage) {
+                mainImage.addEventListener('touchstart', handleTouchStart, false);
+                mainImage.addEventListener('touchend', handleTouchEnd, false);
+            }
+        }
+
         async function addToCart() {
             if (!currentProduct) return;
             
@@ -256,6 +306,9 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
                         
                         // Create image indicators
                         createImageIndicators();
+                        
+                        // Setup touch events for swipe
+                        setupTouchEvents();
                         
                         // Set other product details
                         document.getElementById('productName').textContent = currentProduct.name;
