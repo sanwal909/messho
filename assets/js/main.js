@@ -29,7 +29,7 @@ async function loadProducts() {
 function displayProducts(productsToShow) {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
-    
+
     if (productsToShow.length === 0) {
         grid.innerHTML = `
             <div class="no-products">
@@ -40,7 +40,7 @@ function displayProducts(productsToShow) {
         `;
         return;
     }
-    
+
     grid.innerHTML = productsToShow.map(product => `
         <div class="product-card" onclick="viewProduct(${product.id})">
             <img src="${product.image}" alt="${product.name}" class="product-image">
@@ -64,6 +64,9 @@ function displayProducts(productsToShow) {
                         Trusted
                     </span>
                 </div>
+                <div class="product-actions">
+                        <button class="add-to-cart" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')}, 'M')">Add to Cart</button>
+                    </div>
             </div>
         </div>
     `).join('');
@@ -72,27 +75,27 @@ function displayProducts(productsToShow) {
 // Filter products by category
 function filterCategory(category) {
     currentCategory = category;
-    
+
     // Update active category
     document.querySelectorAll('.category-item').forEach(item => {
         item.classList.remove('active');
     });
     event.target.closest('.category-item').classList.add('active');
-    
+
     // Filter products
     if (category === 'all') {
         filteredProducts = [...products];
     } else {
         filteredProducts = products.filter(product => product.category === category);
     }
-    
+
     displayProducts(filteredProducts);
 }
 
 // Search products
 function searchProducts() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    
+
     if (searchTerm === '') {
         filteredProducts = currentCategory === 'all' ? [...products] : products.filter(p => p.category === currentCategory);
     } else {
@@ -102,7 +105,7 @@ function searchProducts() {
             product.category.toLowerCase().includes(searchTerm)
         );
     }
-    
+
     displayProducts(filteredProducts);
 }
 
@@ -126,7 +129,7 @@ function navigateTo(page) {
         item.classList.remove('active');
     });
     event.target.closest('.nav-item').classList.add('active');
-    
+
     switch(page) {
         case 'home':
             window.location.href = 'index.php';
@@ -173,7 +176,7 @@ function showNotification(message, type = 'success') {
     notification.className = `notification ${type}`;
     notification.textContent = message;
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.remove();
     }, 3000);
@@ -200,11 +203,11 @@ function hideLoading() {
 function startTimer() {
     const timerElement = document.getElementById('timer');
     if (!timerElement) return;
-    
+
     let hours = 1;
     let minutes = 10;
     let seconds = 24;
-    
+
     setInterval(() => {
         seconds--;
         if (seconds < 0) {
@@ -218,11 +221,11 @@ function startTimer() {
                 }
             }
         }
-        
+
         const h = hours.toString().padStart(2, '0');
         const m = minutes.toString().padStart(2, '0');
         const s = seconds.toString().padStart(2, '0');
-        
+
         timerElement.textContent = `${h}h:${m}m:${s}s`;
     }, 1000);
 }

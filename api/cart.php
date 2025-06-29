@@ -13,7 +13,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $total = 0;
         
         foreach ($_SESSION['cart'] as $item) {
-            $cartItems[] = $item;
+            $cartItems[] = [
+                'product' => [
+                    'id' => $item['id'],
+                    'name' => $item['name'],
+                    'price' => $item['price'],
+                    'originalPrice' => $item['originalPrice'],
+                    'image' => $item['image']
+                ],
+                'size' => $item['size'],
+                'quantity' => $item['quantity']
+            ];
             $total += $item['price'] * $item['quantity'];
         }
         
