@@ -27,7 +27,6 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
                 <i class="fas fa-search search-icon"></i>
             </div> -->
             <div class="header-icons">
-                <i class="fas fa-heart"></i>
                 <div class="cart-icon" onclick="goToCart()">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-count" id="cart-count">0</span>

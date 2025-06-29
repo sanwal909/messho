@@ -160,11 +160,15 @@ async function updateCartCount() {
     try {
         const response = await fetch('api/cart.php');
         const cartData = await response.json();
-        const cartCount = document.getElementById('cartCount');
-        if (cartCount) {
-            cartCount.textContent = cartData.count || 0;
-            cartCount.style.display = cartData.count > 0 ? 'flex' : 'none';
-        }
+        
+        // Update all cart count elements
+        const cartCounts = document.querySelectorAll('#cart-count, #cartCount, .cart-count');
+        cartCounts.forEach(cartCount => {
+            if (cartCount) {
+                cartCount.textContent = cartData.count || 0;
+                cartCount.style.display = cartData.count > 0 ? 'flex' : 'none';
+            }
+        });
     } catch (error) {
         console.error('Error updating cart count:', error);
     }

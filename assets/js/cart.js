@@ -1,13 +1,25 @@
 // Cart management functions
 
 // Add product to cart
-async function addProductToCart(product, size = 'M') {
-    // Validate product data before sending
-    if (!product || !product.id || !product.name || !product.price) {
-        console.error('Invalid product data provided to addProductToCart:', product);
+async function addProductToCart(product, size = 'M', quantity = 1) {
+    // Validate product data
+    if (!product || typeof product !== 'object') {
+        console.error('Invalid product data provided to addProductToCart:', { product, size, quantity });
         return false;
     }
-    
+
+    // Check required fields - allow price to be 0
+    if (!product.id || !product.name || product.price === undefined || product.price === null) {
+        console.error('Invalid product data provided to addProductToCart:', { product, size, quantity });
+        return false;
+    }
+
+    // Skip validation for invalid/placeholder products
+    if (product.id === 0 || product.name === "Unknown Product") {
+        console.error('Invalid product data provided to addProductToCart:', { product, size, quantity });
+        return false;
+    }
+
     try {
         const response = await fetch('api/cart.php', {
             method: 'POST',
@@ -20,12 +32,13 @@ async function addProductToCart(product, size = 'M') {
                 price: product.price,
                 originalPrice: product.originalPrice || product.price,
                 image: product.image || 'placeholder.jpg',
-                size: size
+                size: size,
+                quantity: quantity
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             updateCartCount();
             return true;
@@ -52,9 +65,9 @@ async function removeProductFromCart(productId, size) {
                 size: size
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             updateCartCount();
             return true;
@@ -94,9 +107,9 @@ async function updateCartQuantity(productId, size, quantity) {
                 quantity: quantity
             })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             updateCartCount();
             return true;
@@ -116,11 +129,11 @@ async function clearCart() {
         // This would need a separate endpoint in a real implementation
         // For now, we'll work with the existing structure
         const cartData = await getCartContents();
-        
+
         for (const item of cartData.items) {
             await removeProductFromCart(item.id, item.size);
         }
-        
+
         updateCartCount();
         return true;
     } catch (error) {
@@ -135,18 +148,18 @@ function validateCartItem(product, size) {
         console.error('Invalid product data');
         return false;
     }
-    
+
     if (!size) {
         console.error('Size is required');
         return false;
     }
-    
+
     const validSizes = ['S', 'M', 'L', 'XL', 'XXL'];
     if (!validSizes.includes(size)) {
         console.error('Invalid size');
         return false;
     }
-    
+
     return true;
 }
 
@@ -187,7 +200,7 @@ async function syncCart() {
     try {
         const serverCart = await getCartContents();
         const localCart = getCartFromLocalStorage();
-        
+
         if (localCart && localCart.items.length > 0 && serverCart.items.length === 0) {
             // Restore cart from local storage if server cart is empty
             for (const item of localCart.items) {
@@ -197,7 +210,7 @@ async function syncCart() {
             // Save current server cart to local storage
             saveCartToLocalStorage(serverCart);
         }
-        
+
         updateCartCount();
     } catch (error) {
         console.error('Error syncing cart:', error);
