@@ -244,6 +244,23 @@ function calculateDiscount(original, current) {
     return Math.round(((original - current) / original) * 100);
 }
 
+// Add to cart function
+async function addToCart(product, size = 'M') {
+    event.stopPropagation(); // Prevent product card click
+    
+    try {
+        const success = await addProductToCart(product, size);
+        if (success) {
+            showNotification('Product added to cart!', 'success');
+        } else {
+            showNotification('Failed to add product to cart', 'error');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showNotification('Error adding product to cart', 'error');
+    }
+}
+
 // Error handling
 window.addEventListener('error', function(e) {
     console.error('JavaScript error:', e.error);
