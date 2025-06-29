@@ -72,6 +72,35 @@ if (!isset($_SESSION['cart'])) {
             </div>
         </div>
 
+        <!-- Order Summary -->
+        <div class="order-summary" id="orderSummary" style="display: none;">
+            <div class="summary-header">
+                <h3>Price Details</h3>
+            </div>
+            <div class="summary-content">
+                <div class="summary-row">
+                    <span class="summary-label">Price (<span id="itemCount">0</span> item)</span>
+                    <span class="summary-value" id="itemsPrice">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Discount</span>
+                    <span class="summary-value discount-value" id="discountValue">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Delivery Charges</span>
+                    <span class="summary-value free-delivery">FREE Delivery</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row total-row">
+                    <span class="summary-label">Total Amount</span>
+                    <span class="summary-value" id="finalTotal">₹0</span>
+                </div>
+                <div class="savings-info" id="savingsInfo" style="display: none;">
+                    <span>You will save <span class="savings-amount" id="savingsAmount">₹0</span> on this order</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Empty Cart State -->
         <div class="empty-cart" id="emptyCart" style="display: none;">
             <i class="fas fa-shopping-bag"></i>
@@ -121,21 +150,30 @@ if (!isset($_SESSION['cart'])) {
                 const cartItemsContainer = document.getElementById('cartItems');
                 const emptyCart = document.getElementById('emptyCart');
                 const cartTotal = document.getElementById('cartTotal');
+                const orderSummary = document.getElementById('orderSummary');
 
                 if (!cartData.items || cartData.items.length === 0) {
                     cartItemsContainer.style.display = 'none';
                     emptyCart.style.display = 'block';
                     cartTotal.style.display = 'none';
+                    orderSummary.style.display = 'none';
                     return;
                 }
 
                 cartItemsContainer.style.display = 'block';
                 emptyCart.style.display = 'none';
                 cartTotal.style.display = 'block';
+                orderSummary.style.display = 'block';
 
                 cartItemsContainer.innerHTML = '';
 
+                let totalOriginalPrice = 0;
+                let totalItems = 0;
+
                 cartData.items.forEach(item => {
+                    totalOriginalPrice += (item.product.originalPrice || item.product.price) * item.quantity;
+                    totalItems += item.quantity;
+
                     const cartItemHTML = `
                         <div class="cart-item" data-product-id="${item.product.id}" data-size="${item.size}">
                             <div class="cart-item-image">
@@ -166,7 +204,23 @@ if (!isset($_SESSION['cart'])) {
                     cartItemsContainer.innerHTML += cartItemHTML;
                 });
 
+                // Update order summary
+                const discount = totalOriginalPrice - cartData.total;
+                document.getElementById('itemCount').textContent = totalItems;
+                document.getElementById('itemsPrice').textContent = `₹${totalOriginalPrice}`;
+                document.getElementById('discountValue').textContent = `₹${discount}`;
+                document.getElementById('finalTotal').textContent = `₹${cartData.total}`;
                 document.getElementById('totalAmount').textContent = `₹${cartData.total}`;
+
+                // Show savings info if there's a discount
+                const savingsInfo = document.getElementById('savingsInfo');
+                const savingsAmount = document.getElementById('savingsAmount');
+                if (discount > 0) {
+                    savingsAmount.textContent = `₹${discount}`;
+                    savingsInfo.style.display = 'block';
+                } else {
+                    savingsInfo.style.display = 'none';
+                }
 
             } catch (error) {
                 console.error('Error loading cart:', error);
