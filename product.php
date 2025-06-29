@@ -200,27 +200,37 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
         // Touch swipe functionality
         let touchStartX = 0;
         let touchEndX = 0;
+        let isSwiping = false;
 
         function handleTouchStart(e) {
             touchStartX = e.changedTouches[0].screenX;
+            isSwiping = true;
+        }
+
+        function handleTouchMove(e) {
+            if (!isSwiping) return;
+            e.preventDefault(); // Prevent scrolling
         }
 
         function handleTouchEnd(e) {
+            if (!isSwiping) return;
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
+            isSwiping = false;
         }
 
         function handleSwipe() {
             const swipeThreshold = 50; // minimum swipe distance
+            const swipeDistance = Math.abs(touchEndX - touchStartX);
             
-            if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe left - next image
-                nextImage();
-            }
-            
-            if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe right - previous image
-                previousImage();
+            if (swipeDistance > swipeThreshold) {
+                if (touchEndX < touchStartX) {
+                    // Swipe left - next image
+                    nextImage();
+                } else if (touchEndX > touchStartX) {
+                    // Swipe right - previous image
+                    previousImage();
+                }
             }
         }
 
@@ -228,8 +238,15 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
         function setupTouchEvents() {
             const mainImage = document.querySelector('.main-image');
             if (mainImage) {
-                mainImage.addEventListener('touchstart', handleTouchStart, false);
-                mainImage.addEventListener('touchend', handleTouchEnd, false);
+                // Remove existing listeners first
+                mainImage.removeEventListener('touchstart', handleTouchStart);
+                mainImage.removeEventListener('touchmove', handleTouchMove);
+                mainImage.removeEventListener('touchend', handleTouchEnd);
+                
+                // Add new listeners
+                mainImage.addEventListener('touchstart', handleTouchStart, { passive: false });
+                mainImage.addEventListener('touchmove', handleTouchMove, { passive: false });
+                mainImage.addEventListener('touchend', handleTouchEnd, { passive: false });
             }
         }
 

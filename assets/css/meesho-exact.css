@@ -569,6 +569,7 @@ body {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    touch-action: pan-y pinch-zoom;
 }
 
 .main-image:active {
@@ -579,8 +580,9 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none;
+    will-change: transform;
 }
 
 .image-indicators {
@@ -592,22 +594,25 @@ body {
 }
 
 .indicator {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     background: #ddd;
     cursor: pointer;
     transition: all 0.3s ease;
+    touch-action: manipulation;
 }
 
-.indicator:hover {
+.indicator:hover,
+.indicator:active {
     background: #bbb;
     transform: scale(1.2);
 }
 
 .indicator.active {
     background: #e60965;
-    transform: scale(1.3);
+    transform: scale(1.4);
+    box-shadow: 0 2px 8px rgba(230, 9, 101, 0.3);
 }
 
 .similar-products {
