@@ -124,10 +124,11 @@ body {
 /* Categories - Exact Meesho Layout */
 .categories-section {
     background: #ffffff;
-    padding: 12px 16px 16px;
+    padding: 100px 16px 16px;
     display: flex;
     justify-content: space-around;
     align-items: flex-start;
+    margin-top:55px;
 }
 
 .category-item {
@@ -191,8 +192,18 @@ body {
 
 /* Banner Section - Exact Colors */
 .banner-section {
-    padding: 0 16px 12px;
-    background: #ffffff;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+.banner-section img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover; /* Optional - for future */
 }
 
 .sale-banner {
@@ -202,7 +213,7 @@ body {
     border-radius: 6px;
     text-align: center;
     margin-bottom: 12px;
-    height: 32px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1162,6 +1173,11 @@ body {
     padding: 12px;
     border-top: 1px solid #e0e0e0;
 }
+.upi-option span {
+  font-size: 16px;       /* slightly bigger */
+  font-weight: 600;      /* make it bolder */
+  color: #000000;
+}
 
 .upi-option {
     display: flex;
@@ -1316,39 +1332,43 @@ body {
     text-decoration: line-through;
     margin-left: 4px;
 }
+.upi-option label {
+  display: flex;
+  flex-direction: row;              /* Ensure horizontal alignment */
+  justify-content: space-between;  /* Push items to ends */
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+}
 
-/* UPI App Icons */
+.upi-label-text {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Container holding the circular logo */
 .upi-app-icon {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.upi-app-icon.paytm {
-    background: linear-gradient(135deg, #002970, #00c3f7);
+/* Make image circular and fit inside wrapper */
+.upi-app-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
-.upi-app-icon.phonepe {
-    background: linear-gradient(135deg, #5f259f, #8e44ad);
-}
 
-.upi-app-icon.googlepay {
-    background: linear-gradient(135deg, #4285f4, #34a853);
-}
+/* Specific App Colors */
 
-.upi-app-icon.bharatpe {
-    background: linear-gradient(135deg, #ff6b35, #f7931e);
-}
-
-.upi-app-icon.bhim {
-    background: linear-gradient(135deg, #ff6b35, #e74c3c);
-}
 
 /* Payment Loading Modal */
 .payment-modal {

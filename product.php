@@ -22,10 +22,10 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
             <button onclick="window.history.back()" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <div class="search-container">
+            <!-- <div class="search-container">
                 <input type="text" placeholder="Try Saree, Kurti or Search by Product Code" id="searchInput">
                 <i class="fas fa-search search-icon"></i>
-            </div>
+            </div> -->
             <div class="header-icons">
                 <i class="fas fa-heart"></i>
                 <div class="cart-icon" onclick="goToCart()">
@@ -49,12 +49,12 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
                 <div class="indicator"></div>
                 <div class="indicator"></div>
             </div>
-            <div class="similar-products">
+            <!-- <div class="similar-products">
                 <h4>Similar</h4>
                 <div class="similar-item">
-                    <img src="https://images.meesho.com/images/products/95391018/wohqy_512.webp" alt="Similar">
+                    <img src="data/imgi_213_2F508122-B184-4A92-B90A-4198FB3FD61E-scaled.jpg" alt="Similar">
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Product Info -->

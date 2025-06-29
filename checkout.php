@@ -129,51 +129,57 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="upi-options" id="upiOptions">
-                    <div class="upi-option">
-                        <input type="radio" id="paytm" name="upiMethod" value="paytm">
-                        <label for="paytm">
-                            <div class="upi-app-icon paytm">P</div>
-                            <span>Paytm</span>
-                        </label>
-                    </div>
-                    <div class="upi-option">
-                        <input type="radio" id="phonepe" name="upiMethod" value="phonepe">
-                        <label for="phonepe">
-                            <div class="upi-app-icon phonepe">Pe</div>
-                            <span>PhonePe</span>
-                        </label>
-                    </div>
-                    <div class="upi-option">
-                        <input type="radio" id="googlepay" name="upiMethod" value="googlepay">
-                        <label for="googlepay">
-                            <div class="upi-app-icon googlepay">G</div>
-                            <span>Google Pay</span>
-                        </label>
-                    </div>
-                    <div class="upi-option">
-                        <input type="radio" id="bharatpe" name="upiMethod" value="bharatpe" checked>
-                        <label for="bharatpe">
-                            <div class="upi-app-icon bharatpe">B</div>
-                            <span>BharatPe</span>
-                        </label>
-                    </div>
-                    <div class="upi-option">
-                        <input type="radio" id="bhim" name="upiMethod" value="bhim">
-                        <label for="bhim">
-                            <div class="upi-app-icon bhim">UPI</div>
-                            <span>BHIM UPI</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
+  <div class="upi-option">
+    <input type="radio" id="paytm" name="upiMethod" value="paytm">
+    <label for="paytm">
+      <span class="upi-label-text">Paytm</span>
+      <div class="upi-app-icon paytm">
+        <img src="paytm.jpg" alt="Paytm">
+      </div>
+    </label>
+  </div>
 
-            <div class="payment-method">
-                <div class="method-header">
-                    <span class="method-title">Cash on Delivery</span>
-                </div>
-            </div>
-        </div>
-        
+  <div class="upi-option">
+    <input type="radio" id="phonepe" name="upiMethod" value="phonepe">
+    <label for="phonepe">
+      <span class="upi-label-text">PhonePe</span>
+      <div class="upi-app-icon phonepe">
+        <img src="imgi_3_phonepe.png" alt="PhonePe">
+      </div>
+    </label>
+  </div>
+
+  <div class="upi-option">
+    <input type="radio" id="googlepay" name="upiMethod" value="googlepay">
+    <label for="googlepay">
+      <span class="upi-label-text">Google Pay</span>
+      <div class="upi-app-icon googlepay">
+        <img src="imgi_2_gpay_icon.png" alt="Google Pay">
+      </div>
+    </label>
+  </div>
+
+  <div class="upi-option">
+    <input type="radio" id="bharatpe" name="upiMethod" value="bharatpe" checked>
+    <label for="bharatpe">
+      <span class="upi-label-text">BharatPe</span>
+      <div class="upi-app-icon bharatpe">
+        <img src="bharat.jpeg" alt="BharatPe">
+      </div>
+    </label>
+  </div>
+
+  <div class="upi-option">
+    <input type="radio" id="bhim" name="upiMethod" value="bhim">
+    <label for="bhim">
+      <span class="upi-label-text">BHIM UPI</span>
+      <div class="upi-app-icon bhim">
+        <img src="bhim.png" alt="BHIM">
+      </div>
+    </label>
+  </div>
+</div>
+
         <button class="pay-now-btn" onclick="processPayment()">
             Pay Now
         </button>

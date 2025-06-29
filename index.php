@@ -36,17 +36,18 @@ if (!isset($_SESSION['cart'])) {
     </header>
 
     <!-- Search Bar -->
-    <div class="search-container">
+    <!-- <div class="search-container">
         <div class="search-box">
             <i class="fas fa-search search-icon"></i>
             <input type="text" placeholder="Search for Sarees, Kurtis, Cosmetics, etc." id="searchInput">
         </div>
-    </div>
+    </div> -->
 
     <!-- Categories -->
     <div class="categories-section">
         <div class="category-item active" onclick="filterCategory('all')">
             <div class="category-icon">
+                <img src="cat.webp" alt="All Categories">"
                 <div class="category-grid">
                     <div class="grid-item pink"></div>
                     <div class="grid-item orange"></div>
@@ -58,19 +59,19 @@ if (!isset($_SESSION['cart'])) {
         </div>
         <div class="category-item" onclick="filterCategory('kurtis')">
             <div class="category-icon">
-                <img src="https://images.meesho.com/images/marketing/1678713208343.jpg" alt="Kurtis">
+                <img src="data/imgi_239_8653FCFC-180B-4258-BA57-69AC7E0C11E1-scaled.jpg" alt="Kurtis">
             </div>
             <span>Kurtis</span>
         </div>
         <div class="category-item" onclick="filterCategory('suits')">
             <div class="category-icon">
-                <img src="https://images.meesho.com/images/marketing/1678713171485.jpg" alt="Kurti 2 Com">
+                <img src="data/imgi_343_EB2CF48E-5E72-4449-A136-1EC8465A57BA-scaled.jpg" alt="Kurti 2 Com">
             </div>
             <span>Kurti 2 Com..</span>
         </div>
         <div class="category-item" onclick="filterCategory('combos')">
             <div class="category-icon">
-                <img src="https://images.meesho.com/images/marketing/1678713190025.jpg" alt="Kurti 3 Com">
+                <img src="data/imgi_248_0726CEAD-BE5C-493A-B4A5-5CDD282F99C4-scaled4372.jpg" alt="Kurti 3 Com">
             </div>
             <span>Kurti 3 Com..</span>
         </div>
@@ -78,7 +79,7 @@ if (!isset($_SESSION['cart'])) {
 
     <!-- Banner -->
     <div class="banner-section">
-        <div class="sale-banner">
+        <!-- <div class="sale-banner">
             <div class="sale-text">
                 <span class="biggest-brands">BIGGEST BRANDS BASH</span>
                 <span class="live-sale">SALE IS LIVE</span>
@@ -95,7 +96,8 @@ if (!isset($_SESSION['cart'])) {
                     <span>₹100 on orders above ₹799</span>
                 </div>
             </div>
-        </div>
+        </div> -->
+        <img src="1706108173253_600.webp" alt="Banner Image">
     </div>
 
     <!-- Features -->
@@ -129,7 +131,7 @@ if (!isset($_SESSION['cart'])) {
             <h3>Meesho Daily Deals ⚡</h3>
             <div class="timer">
                 <i class="fas fa-clock"></i>
-                <span id="timer">01h:10m:24s</span>
+                <span id="timer">50m:24s</span>
             </div>
         </div>
     </div>
