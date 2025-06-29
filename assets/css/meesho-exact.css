@@ -587,28 +587,7 @@ body {
     border-radius: 0 0 12px 12px;
 }
 
-/* Swipe hint overlay */
-.main-image::before {
-    content: '← Swipe to navigate →';
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.6);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-    pointer-events: none;
-}
 
-.main-image:hover::before {
-    opacity: 1;
-}
 
 /* Enhanced swipe feedback */
 .main-image.swiping img {

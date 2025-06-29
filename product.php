@@ -196,9 +196,6 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
             if (productImages.length > 1) {
                 const nextIndex = (currentImageIndex + 1) % productImages.length;
                 showImage(nextIndex);
-                
-                // Visual feedback
-                showSwipeMessage('Next Image');
             }
         }
 
@@ -206,51 +203,10 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
             if (productImages.length > 1) {
                 const prevIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
                 showImage(prevIndex);
-                
-                // Visual feedback
-                showSwipeMessage('Previous Image');
             }
         }
 
-        function showSwipeMessage(message) {
-            const existingMessage = document.querySelector('.swipe-message');
-            if (existingMessage) {
-                existingMessage.remove();
-            }
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'swipe-message';
-            messageDiv.textContent = message;
-            messageDiv.style.cssText = `
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(0,0,0,0.8);
-                color: white;
-                padding: 8px 16px;
-                border-radius: 20px;
-                font-size: 12px;
-                font-weight: 600;
-                z-index: 1000;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-                pointer-events: none;
-            `;
-            
-            document.querySelector('.main-image').appendChild(messageDiv);
-            
-            // Animate in
-            setTimeout(() => {
-                messageDiv.style.opacity = '1';
-            }, 10);
-            
-            // Remove after 1 second
-            setTimeout(() => {
-                messageDiv.style.opacity = '0';
-                setTimeout(() => messageDiv.remove(), 300);
-            }, 1000);
-        }
+        
 
         // Touch swipe functionality - Enhanced
         let touchStartX = 0;
@@ -378,10 +334,29 @@ $productId = isset($_GET['id']) ? intval($_GET['id']) : 1;
         async function addToCart() {
             if (!currentProduct) return;
             
-            const result = await addProductToCart(currentProduct, selectedSize);
-            if (result.success) {
-                showNotification('Product added to cart!');
-                updateCartCount();
+            try {
+                const response = await fetch('api/cart.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'add',
+                        productId: currentProduct.id,
+                        size: selectedSize,
+                        quantity: 1
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showNotification('Product added to cart!');
+                    updateCartCount();
+                } else {
+                    console.error('Error adding to cart:', result.message);
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
             }
         }
 
