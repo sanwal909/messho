@@ -7,6 +7,37 @@ if (!isset($_SESSION['cart'])) {
 }
 
 switch ($_SERVER['REQUEST_METHOD']) {
+    case 'PUT':
+        // Update item quantity in cart
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        if ($input && isset($input['productId']) && isset($input['size']) && isset($input['quantity'])) {
+            $productId = $input['productId'];
+            $size = $input['size'];
+            $quantity = intval($input['quantity']);
+            
+            if ($quantity <= 0) {
+                // Remove item if quantity is 0 or less
+                $_SESSION['cart'] = array_filter($_SESSION['cart'], function($item) use ($productId, $size) {
+                    return !($item['id'] == $productId && $item['size'] == $size);
+                });
+                $_SESSION['cart'] = array_values($_SESSION['cart']);
+            } else {
+                // Update quantity
+                foreach ($_SESSION['cart'] as &$item) {
+                    if ($item['id'] == $productId && $item['size'] == $size) {
+                        $item['quantity'] = $quantity;
+                        break;
+                    }
+                }
+            }
+            
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Invalid input']);
+        }
+        break;
+        
     case 'GET':
         // Get cart contents
         $cartItems = [];

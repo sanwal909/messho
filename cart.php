@@ -149,7 +149,7 @@ if (!isset($_SESSION['cart'])) {
                                 </div>
                                 <div class="cart-item-size">Size: ${item.size}</div>
                                 <div class="cart-item-quantity">
-                                    <button class="qty-btn" onclick="updateQuantity(${item.product.id}, '${item.size}', ${item.quantity - 1})">
+                                    <button class="qty-btn" onclick="updateQuantity(${item.product.id}, '${item.size}', ${item.quantity - 1})" ${item.quantity <= 1 ? 'disabled' : ''}>
                                         <i class="fas fa-minus"></i>
                                     </button>
                                     <span class="qty-display">${item.quantity}</span>
@@ -174,17 +174,17 @@ if (!isset($_SESSION['cart'])) {
         }
 
         async function updateQuantity(productId, size, newQuantity) {
-            if (newQuantity <= 0) {
-                await removeFromCart(productId, size);
-                return;
-            }
-
             try {
-                await updateCartQuantity(productId, size, newQuantity);
-                await loadCartItems();
-                await updateCartCount();
+                if (newQuantity <= 0) {
+                    await removeFromCart(productId, size);
+                } else {
+                    await updateCartQuantity(productId, size, newQuantity);
+                    await loadCartItems();
+                    await updateCartCount();
+                }
             } catch (error) {
                 console.error('Error updating quantity:', error);
+                showNotification('Error updating quantity', 'error');
             }
         }
 

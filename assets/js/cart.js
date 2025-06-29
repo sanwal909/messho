@@ -83,17 +83,27 @@ async function getCartContents() {
 // Update quantity in cart
 async function updateCartQuantity(productId, size, quantity) {
     try {
-        // For now, we'll remove and re-add with new quantity
-        // In a more complex system, you'd have a separate update endpoint
-        await removeProductFromCart(productId, size);
+        const response = await fetch('api/cart.php', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                productId: productId,
+                size: size,
+                quantity: quantity
+            })
+        });
         
-        if (quantity > 0) {
-            // You'd need the full product details here
-            // For now, this is a simplified implementation
+        const result = await response.json();
+        
+        if (result.success) {
+            updateCartCount();
+            return true;
+        } else {
+            console.error('Error updating cart quantity:', result.error);
+            return false;
         }
-        
-        updateCartCount();
-        return true;
     } catch (error) {
         console.error('Error updating cart quantity:', error);
         return false;
