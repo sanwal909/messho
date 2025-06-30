@@ -61,16 +61,18 @@ function loadSavedAddressToForm() {
 
 // UPI payment integration
 function generateUPILink(upiId, amount, note, paymentApp = 'upi') {
-    const cleanAmount = amount.toString().replace('₹', '').replace(',', '');
+    const cleanAmount = parseFloat(amount.toString().replace(/[₹,]/g, ''));
     const encodedNote = encodeURIComponent(note);
+    const merchantName = encodeURIComponent('Meesho');
     
-    const baseParams = `pa=${upiId}&pn=Meesho&am=${cleanAmount}&cu=INR&tn=${encodedNote}`;
+    const baseParams = `pa=${upiId}&pn=${merchantName}&am=${cleanAmount}&cu=INR&tn=${encodedNote}`;
     
     const appUrls = {
-        'gpay': `tez://upi/pay?${baseParams}`,
+        'googlepay': `tez://upi/pay?${baseParams}`,
         'phonepe': `phonepe://pay?${baseParams}`,
         'paytm': `paytmmp://pay?${baseParams}`,
-        'whatsapp': `whatsapp://pay?${baseParams}`,
+        'bharatpe': `bharatpe://pay?${baseParams}`,
+        'bhim': `bhim://pay?${baseParams}`,
         'upi': `upi://pay?${baseParams}`
     };
     
@@ -80,32 +82,38 @@ function generateUPILink(upiId, amount, note, paymentApp = 'upi') {
 // Process UPI payment
 async function processUPIPayment(paymentMethod, amount) {
     const upiId = 'rekhadevi573710.rzp@icici';
-    const orderNote = `Meesho Order - ${new Date().toISOString()}`;
+    const orderNote = `Meesho Order Payment`;
     
     try {
+        // Clean amount - remove currency symbol and convert to number
+        const cleanAmount = parseFloat(amount.toString().replace(/[₹,]/g, ''));
+        
+        if (isNaN(cleanAmount) || cleanAmount <= 0) {
+            throw new Error('Invalid amount');
+        }
+        
         // Generate UPI deep link
-        const upiLink = generateUPILink(upiId, amount, orderNote, paymentMethod);
+        const upiLink = generateUPILink(upiId, cleanAmount, orderNote, paymentMethod);
+        
+        console.log('Generated UPI Link:', upiLink);
+        console.log('Payment Method:', paymentMethod);
+        console.log('Amount:', cleanAmount);
         
         // Show loading state
         showPaymentLoading();
         
-        // Attempt to open UPI app
-        window.location.href = upiLink;
+        // Try to open UPI app immediately
+        try {
+            window.open(upiLink, '_self');
+        } catch (e) {
+            // If direct open fails, try location change
+            window.location.href = upiLink;
+        }
         
-        // Fallback for web browsers that don't support app links
-        setTimeout(() => {
-            // Check if still on page (app didn't open)
-            if (document.visibilityState === 'visible') {
-                showUPIFallback(upiLink, upiId, amount);
-            }
-        }, 1000);
-        
-        // Simulate payment processing
+        // Hide loading after redirect attempt
         setTimeout(() => {
             hidePaymentLoading();
-            // In a real app, you'd check payment status via webhook/API
-            confirmPaymentSuccess();
-        }, 3000);
+        }, 1500);
         
     } catch (error) {
         console.error('Error processing UPI payment:', error);
@@ -114,58 +122,7 @@ async function processUPIPayment(paymentMethod, amount) {
     }
 }
 
-// Show UPI fallback options
-function showUPIFallback(upiLink, upiId, amount) {
-    const fallbackModal = document.createElement('div');
-    fallbackModal.className = 'upi-fallback-modal';
-    fallbackModal.innerHTML = `
-        <div class="modal-content">
-            <h3>Complete Payment</h3>
-            <p>Pay ₹${amount} to:</p>
-            <div class="upi-id">${upiId}</div>
-            <div class="fallback-options">
-                <button onclick="copyUPIId('${upiId}')" class="copy-btn">
-                    <i class="fas fa-copy"></i> Copy UPI ID
-                </button>
-                <button onclick="openUPIApp('${upiLink}')" class="open-app-btn">
-                    <i class="fas fa-external-link-alt"></i> Open UPI App
-                </button>
-            </div>
-            <button onclick="closeUPIFallback()" class="close-btn">Cancel</button>
-        </div>
-    `;
-    
-    document.body.appendChild(fallbackModal);
-}
-
-// Copy UPI ID to clipboard
-function copyUPIId(upiId) {
-    navigator.clipboard.writeText(upiId).then(() => {
-        showNotification('UPI ID copied to clipboard', 'success');
-    }).catch(() => {
-        // Fallback for older browsers
-        const textarea = document.createElement('textarea');
-        textarea.value = upiId;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showNotification('UPI ID copied to clipboard', 'success');
-    });
-}
-
-// Open UPI app
-function openUPIApp(upiLink) {
-    window.location.href = upiLink;
-}
-
-// Close UPI fallback modal
-function closeUPIFallback() {
-    const modal = document.querySelector('.upi-fallback-modal');
-    if (modal) {
-        modal.remove();
-    }
-}
+// Direct UPI redirect - no fallback modal needed
 
 // Payment loading states
 function showPaymentLoading() {
