@@ -123,9 +123,45 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
                 <span>Get ₹50 cashback on your first UPI payment</span>
             </div>
 
+            <!-- QR Code Payment Option -->
+            <div class="payment-method">
+                <div class="method-header" onclick="togglePaymentMethod('qr')">
+                    <span class="method-title">Pay with QR Code</span>
+                    <span class="method-subtitle">Scan & Pay - Auto amount filled</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="qr-payment-section" id="qrPaymentSection" style="display: none;">
+                    <div class="qr-code-container">
+                        <div id="qrCodeDisplay" class="qr-code-display">
+                            <div class="qr-loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Generating QR Code...</p>
+                            </div>
+                        </div>
+                        <div class="qr-payment-info">
+                            <h4>Scan QR with any UPI app</h4>
+                            <p class="payment-amount">₹<span id="qrAmount">0</span></p>
+                            <div class="upi-apps-list">
+                                <img src="imgi_2_gpay_icon.png" alt="Google Pay" title="Google Pay">
+                                <img src="imgi_3_phonepe.png" alt="PhonePe" title="PhonePe">
+                                <img src="paytm.jpg" alt="Paytm" title="Paytm">
+                                <img src="bharat.jpeg" alt="BharatPe" title="BharatPe">
+                                <img src="bhim.png" alt="BHIM" title="BHIM">
+                            </div>
+                            <p class="qr-instructions">
+                                1. Open any UPI app<br>
+                                2. Scan the QR code<br>
+                                3. Amount will be auto-filled<br>
+                                4. Enter UPI PIN to pay
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="payment-method">
                 <div class="method-header" onclick="togglePaymentMethod('upi')">
-                    <span class="method-title">UPI</span>
+                    <span class="method-title">UPI Apps</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="upi-options" id="upiOptions">
@@ -150,7 +186,7 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
   </div>
 
   <div class="upi-option">
-    <input type="radio" id="googlepay" name="upiMethod" value="googlepay">
+    <input type="radio" id="googlepay" name="upiMethod" value="googlepay" checked>
     <label for="googlepay">
       <span class="upi-label-text">Google Pay</span>
       <div class="upi-app-icon googlepay">
@@ -160,7 +196,7 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
   </div>
 
   <div class="upi-option">
-    <input type="radio" id="bharatpe" name="upiMethod" value="bharatpe" checked>
+    <input type="radio" id="bharatpe" name="upiMethod" value="bharatpe">
     <label for="bharatpe">
       <span class="upi-label-text">BharatPe</span>
       <div class="upi-app-icon bharatpe">
@@ -245,11 +281,57 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
     </div>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/cart.js"></script>
     <script src="assets/js/checkout.js"></script>
     <script>
         function togglePaymentMethod(method) {
-            const upiOptions = document.getElementById('upiOptions');
-            upiOptions.style.display = upiOptions.style.display === 'none' ? 'block' : 'none';
+            if (method === 'upi') {
+                const upiOptions = document.getElementById('upiOptions');
+                upiOptions.style.display = upiOptions.style.display === 'none' ? 'block' : 'none';
+            } else if (method === 'qr') {
+                const qrSection = document.getElementById('qrPaymentSection');
+                if (qrSection.style.display === 'none' || qrSection.style.display === '') {
+                    qrSection.style.display = 'block';
+                    generateQRCode();
+                } else {
+                    qrSection.style.display = 'none';
+                }
+            }
+        }
+
+        async function generateQRCode() {
+            try {
+                const cartData = await getCartContents();
+                const amount = cartData.total;
+                
+                document.getElementById('qrAmount').textContent = amount;
+                
+                // UPI QR code URL format
+                const upiId = 'rekhadevi573710.rzp@icici';
+                const merchantName = 'Meesho';
+                const note = 'Meesho Order Payment';
+                
+                const upiString = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(merchantName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+                
+                // Generate QR code using qr-server.com API
+                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+                
+                const qrDisplay = document.getElementById('qrCodeDisplay');
+                qrDisplay.innerHTML = `
+                    <img src="${qrCodeUrl}" alt="UPI QR Code" class="qr-code-image">
+                    <p class="qr-code-text">Scan to pay ₹${amount}</p>
+                `;
+                
+            } catch (error) {
+                console.error('Error generating QR code:', error);
+                document.getElementById('qrCodeDisplay').innerHTML = `
+                    <div class="qr-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Unable to generate QR code</p>
+                        <button onclick="generateQRCode()" class="retry-qr-btn">Try Again</button>
+                    </div>
+                `;
+            }
         }
 
         function showPaymentModal() {
@@ -304,29 +386,13 @@ $step = isset($_GET['step']) ? $_GET['step'] : 'address';
             try {
                 const cartData = await getCartContents();
                 const amount = cartData.total;
-                const upiId = "rekhadevi573710.rzp@icici";
                 const paymentApp = selectedUPI.value;
-                const note = `Meesho Order Payment - ₹${amount}`;
                 
-                showPaymentModal();
+                console.log('Selected UPI App:', paymentApp);
+                console.log('Cart Total:', amount);
                 
-                // Generate UPI deep link
-                const upiLink = generateUPILink(upiId, amount, note, paymentApp);
-                
-                // Try to open the UPI app
-                setTimeout(() => {
-                    try {
-                        window.location.href = upiLink;
-                        
-                        // Show success after 3 seconds (simulating payment completion)
-                        setTimeout(() => {
-                            showPaymentSuccess();
-                        }, 3000);
-                        
-                    } catch (error) {
-                        showPaymentError('Could not open payment app. Please try again.');
-                    }
-                }, 1000);
+                // Use the checkout.js function
+                await processUPIPayment(paymentApp, amount);
                 
             } catch (error) {
                 console.error('Payment error:', error);
